@@ -1,0 +1,859 @@
+import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../constants/linker.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart'
+    show kIsWeb; // Import to check platform
+
+class CArtScreen extends StatefulWidget {
+  final List<Map<String, dynamic>> cartItems;
+  int totalPrice;
+  CArtScreen({required this.cartItems, required this.totalPrice});
+  @override
+  _CArtScreenState createState() => _CArtScreenState();
+}
+
+class _CArtScreenState extends State<CArtScreen> {
+  Razorpay _razorpay = Razorpay();
+  List<Map<String, dynamic>> firestoreCartItems = [];
+  TextEditingController addressController = TextEditingController();
+  TextEditingController pinCodeController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    // Fetch data from Firestore
+    _fetchCartItemsFromFirestore();}
+  List<Map<String, dynamic>> fetchedCartItems = [];Future<void> _fetchCartItemsFromFirestore() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final cartCollection = FirebaseFirestore.instance.collection('usersCartData').doc(userId).collection('Cart');
+    final querySnapshot = await cartCollection.get();
+    for (var doc in querySnapshot.docs) {fetchedCartItems.add({'name': doc['name'], 'dob': doc['dob'], 'blood': doc['blood'], 'price': doc['price'], 'contact1': doc['contact1'], 'contact2': doc['contact2'], 'imageUrl': doc['imageUrl']});}setState(() {firestoreCartItems = fetchedCartItems;widget.totalPrice = firestoreCartItems.fold(0,
+        (sum, item) => sum + int.parse(item['price'] ?? '0'),);});}
+  @override void dispose() {super.dispose();_razorpay.clear();}
+  @override Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Text('Cart'),
+      ),
+      floatingActionButton:
+          firestoreCartItems.isEmpty ? null : _buildFloatingActionButton(),
+      body: firestoreCartItems.isEmpty
+          ? Column(children: [Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                    Text('Cart', style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    InkWell(
+                      onTap: () {Navigator.push(
+                          context,                         MaterialPageRoute(
+                            builder: (context) => OrderHistoryScreen(),),                       );},
+                      child: Container(width: 200, padding: EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(10),),
+                        child: Center(child: Text(
+                            'Order History',
+                          style: TextStyle(color: Colors.white),),),),)],), SizedBox(height: 50.h,), Center(
+                  child: Text(
+                    'Your cart is empty',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),),],)
+          : _buildCartList(firestoreCartItems),);}
+  Widget _buildFloatingActionButton() {
+    return Container(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+      margin: const EdgeInsets.only(left: 30),
+      height: 120,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.green.shade500,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text('Total'), Row(
+                children: [
+                  Icon(Icons.currency_rupee, size: 17),
+                  Text('${widget.totalPrice}'),],),],),
+          SizedBox(height: 10),
+          GestureDetector(
+            onTap: () {
+              _showCheckoutBottomSheet(context);},
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 15),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),),
+              child: Center(
+                child: Text(
+                  'Checkout',
+                  style: TextStyle(color: Colors.white, fontSize: 16),),),),),],),);}
+  Widget _buildCartList(List<Map<String, dynamic>> cartItems) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              'Cart',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+            InkWell(onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderHistoryScreen(),),);}, child: Container(
+                width: 200,
+                padding: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(10),),
+                child: Center(
+                  child: Text(
+                    'Order History',
+                    style: TextStyle(color: Colors.white),),),),),],),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+              itemCount: cartItems.length,
+              itemBuilder: (context, index) {
+                final item = cartItems[index];
+                return Card(
+                  child: ListTile(
+                    title: Text('Name: ${item['name']}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Date of Birth: ${item['dob']}'),
+                        Text('Blood Group: ${item['blood']}'),
+                        Text('Price: ${item['price']}'),
+                        Text('Contact1: ${item['contact1']}'),],),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        _deleteCartItem(index);},),),);},),),),]);}
+  void _deleteCartItem(int index) async {
+    setState(() {
+      firestoreCartItems.removeAt(index);
+    });
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    final cartCollection = FirebaseFirestore.instance
+        .collection('usersCartData')
+        .doc(userId)
+        .collection('Cart');
+    final querySnapshot = await cartCollection.get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final docId = querySnapshot.docs[index].id;
+      await cartCollection.doc(docId).delete();
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? cartData = prefs.getStringList('cartData') ?? [];
+    if (index < cartData.length) {
+      cartData.removeAt(index);
+      await prefs.setStringList('cartData', cartData);
+    }
+    int updatedTotalPrice = firestoreCartItems.fold(
+      0,
+      (sum, item) => sum + int.parse(item['price'] ?? '0'),
+    );
+    setState(() {
+      widget.totalPrice = updatedTotalPrice;});}
+  void _showCheckoutBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled:
+          true, // This allows the bottom sheet to resize with the keyboard
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context)
+                .viewInsets
+                .bottom, // Adjusts padding based on keyboard visibility
+            left: 20.0, right: 20.0, top: 20.0,
+          ),
+          child: SingleChildScrollView(
+            reverse:
+                true, // This ensures the bottom sheet moves up when the keyboard appears
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Order Summary',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,),),
+                LightDarktextField(
+                  controller: addressController,
+                  hintText: 'Address',
+                  keyboardType: TextInputType.text,), LightDarktextField(
+                  controller: pinCodeController,
+                  hintText: 'Pin Code',
+                  keyboardType: TextInputType.number,),
+                SizedBox(height: 15),
+                ...firestoreCartItems.map(
+                  (item) => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Name: ${item['name']}'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Icon(Icons.currency_rupee, size: 17),
+                          Text('${item['price']}'),],),],),),
+                Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.currency_rupee, size: 17),
+                        Text(
+                          '${widget.totalPrice}',
+                          style: TextStyle(fontSize: 18),),],),],),
+                SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context); // Close the bottom sheet
+                    _startPayment();},
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Proceed to Payment',
+                        style: TextStyle(color: Colors.white, fontSize: 16),),),),),],),),);},);}
+  // void _startPayment() {
+  //   var options = {
+  //     'key': 'rzp_test_4xCkdGHvFwGxuJ',
+  //     'amount': widget.totalPrice * 100,
+  //     'name': 'E-Cart App',
+  //     'description': 'Order Payment',
+  //     'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'}
+  //   };
+  //   try {
+  //     _razorpay.open(options);
+  //   } catch (e) {
+  //     print("Error starting payment: $e");
+  //   }
+  // }
+  void _startPayment() {
+    var options = {
+      // Replace the test key with your live key
+      'key': 'rzp_live_OLMl0WTMHz0FEs', // Live API Key (not Merchant ID)
+      'amount': widget.totalPrice *
+          100, // Razorpay expects the amount in the smallest currency unit (e.g., paise for INR)
+      'name': 'E-Cart App',
+      'description': 'Order Payment',
+      'prefill': {
+        'contact': '8888888888', // Prefill contact number
+        'email': 'test@razorpay.com' // Prefill email
+      }
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      print("Error starting payment: $e");}}
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    print("Payment Success: ${response.paymentId}");
+    try {
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+      final cartCollection = FirebaseFirestore.instance.collection('CartData');
+      final userCartCollection = FirebaseFirestore.instance
+          .collection('usersCartData')
+          .doc(userId)
+          .collection('Cart');
+      final String currentDate =
+          DateFormat('yyyy-MM-dd').format(DateTime.now());
+      print(
+          '----------------------DATA ADDING in Firestore collection .........');
+      print('87698-4=45=6=-=-=-=-=-=2-4=32434499-24=-4=32-4=3-4=324859485945');
+      print(firestoreCartItems);
+      for (var item in firestoreCartItems) {
+        print('Contact1:${item['contact1']}');
+        print('Contact2:${item['contact2']}');
+        await cartCollection.add({
+          'imageUrl': item['imageUrl'],
+          'name': item['name'] ?? '',
+          'dob': item['dob'] ?? '',
+          'blood': item['blood'] ?? '',
+          'price': item['price'] ?? '',
+          'contact1': item['contact1'] ?? '',
+          'contact2': item['contact2'] ?? '',
+          'orderNumber': generateRandomOrderNumber(),
+          'userId': userId,
+          'orderId': response.orderId,
+          'paymentId': response.paymentId,
+          'address': addressController.text.toString(),
+          'pinCode': pinCodeController.text.toString(),
+          'date': currentDate,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      }
+      final userCartDocs = await userCartCollection.get();
+      for (var doc in userCartDocs.docs) {
+        await doc.reference.delete();
+      }
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      setState(() {
+        firestoreCartItems.clear();
+        widget.totalPrice = 0;
+      });
+      _showSuccessDialog();
+    } catch (e) {
+      print('Error processing payment and updating Firestore: $e');
+    }
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    print("Payment Error: ${response.message}");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Payment Failed"),
+          content: Text(
+              "Something went wrong. Please try again. Error: ${response.message}"),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("_handleExternalWallet"),
+          content: Text(
+              "Something went wrong. Please try again. Error: ${response.walletName}"),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    print("External Wallet: ${response.walletName}");
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Payment Success"),
+          content:
+              Text("Thank you for your purchase! Your order is confirmed."),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String generateRandomOrderNumber() {
+    var rng = Random();
+    return (rng.nextInt(900000) + 100000).toString();
+  }
+}
+
+///TODO:-----------------------------------------------
+// class _CArtScreenState extends State<CArtScreen> {
+//   Razorpay _razorpay = Razorpay();
+//   List<Map<String, dynamic>> firestoreCartItems = [];
+//   TextEditingController addressController = TextEditingController();
+//   TextEditingController pinCodeController = TextEditingController();
+//   @override
+//   void initState() {
+//     super.initState();
+//     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+//     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+//     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+//     // Fetch data from Firestore
+//     _fetchCartItemsFromFirestore();
+//   }
+//
+//   List<Map<String, dynamic>> fetchedCartItems = [];
+//   Future<void> _fetchCartItemsFromFirestore() async {
+//     final userId = FirebaseAuth.instance.currentUser!.uid;
+//     final cartCollection = FirebaseFirestore.instance
+//         .collection('usersCartData')
+//         .doc(userId)
+//         .collection('Cart');
+//     final querySnapshot = await cartCollection.get();
+//     for (var doc in querySnapshot.docs) {
+//       fetchedCartItems.add({
+//         'name': doc['name'],
+//         'dob': doc['dob'],
+//         'blood': doc['blood'],
+//         'price': doc['price'],
+//         'contact1': doc['contact1'],
+//         'contact2': doc['contact2'],
+//         'imageUrl': doc['imageUrl']
+//       });
+//     }
+//     setState(() {
+//       firestoreCartItems = fetchedCartItems;
+//       widget.totalPrice = firestoreCartItems.fold(
+//         0,
+//         (sum, item) => sum + int.parse(item['price'] ?? '0'),
+//       );
+//     });
+//   }
+//
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     _razorpay.clear();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: Colors.transparent,
+//         title: Text('Cart'),
+//       ),
+//       floatingActionButton:
+//           firestoreCartItems.isEmpty ? null : _buildFloatingActionButton(),
+//       body: firestoreCartItems.isEmpty
+//           ? Column(
+//               children: [
+//                 Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                   children: [
+//                     Text(
+//                       'Cart',
+//                       style:
+//                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+//                     InkWell(onTap: () {Navigator.push(context, MaterialPageRoute(
+//                             builder: (context) => OrderHistoryScreen(),),);},
+//                       child: Container(
+//                         width: 200,
+//                         padding: EdgeInsets.symmetric(vertical: 10),
+//                         decoration: BoxDecoration(
+//                           color: Colors.blue,
+//                           borderRadius: BorderRadius.circular(10),
+//                         ),
+//                         child: Center(
+//                           child: Text(
+//                             'Order History',
+//                             style: TextStyle(color: Colors.white),
+//                           ),
+//                         ),),),],),
+//                 SizedBox(
+//                   height: 50.h,
+//                 ),
+//                 Center(
+//                   child: Text(
+//                     'Your cart is empty',
+//                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),),],       ) : _buildCartList(firestoreCartItems),);}
+//   Widget _buildFloatingActionButton() {
+//     return Container(
+//       padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+//       margin: const EdgeInsets.only(left: 30),
+//       height: 120,
+//       width: double.infinity,
+//       decoration: BoxDecoration(
+//         color: Colors.green.shade500,
+//         borderRadius: BorderRadius.circular(20),
+//       ),
+//       child: Column(
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Text('Total'),
+//               Row(
+//                 children: [
+//                   Icon(Icons.currency_rupee, size: 17),
+//                   Text('${widget.totalPrice}'),],),],),
+//           SizedBox(height: 10),
+//           GestureDetector(
+//             onTap: () {
+//               _showCheckoutBottomSheet(context);
+//             },
+//             child: Container(
+//               width: double.infinity,
+//               padding: EdgeInsets.symmetric(vertical: 15),
+//               decoration: BoxDecoration(
+//                 color: Colors.blue,
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//               child: Center(
+//                 child: Text(
+//                   'Checkout',
+//                   style: TextStyle(color: Colors.white, fontSize: 16),),),),),],),);}
+//   Widget _buildCartList(List<Map<String, dynamic>> cartItems) {
+//     return Column(
+//       children: [
+//         Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceAround,
+//           children: [
+//             Text(
+//               'Cart',
+//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+//             InkWell(onTap: () {
+//                 Navigator.push(context,
+//                   MaterialPageRoute(
+//                     builder: (context) => OrderHistoryScreen(),),);}, child: Container(
+//                 width: 200,
+//                 padding: EdgeInsets.symmetric(vertical: 10),
+//                 decoration: BoxDecoration(
+//                   color: Colors.blue,
+//                   borderRadius: BorderRadius.circular(10),
+//                 ),
+//                 child: Center(
+//                   child: Text(
+//                     'Order History',
+//                     style: TextStyle(color: Colors.white),),),),),],), Expanded(
+//           child: Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: ListView.builder(
+//               itemCount: cartItems.length,
+//               itemBuilder: (context, index) {
+//                 final item = cartItems[index];
+//                 return Card(
+//                   child: ListTile(
+//                     title: Text('Name: ${item['name']}'),
+//                     subtitle: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text('Date of Birth: ${item['dob']}'),
+//                         Text('Blood Group: ${item['blood']}'),
+//                         Text('Price: ${item['price']}'),
+//                         Text('Contact1: ${item['contact1']}'),
+//                       ],
+//                     ),
+//                     trailing: IconButton(
+//                       icon: Icon(Icons.delete, color: Colors.red),
+//                       onPressed: () {_deleteCartItem(index);},),),);},),),),],);}
+//   void _deleteCartItem(int index) async {setState(() {firestoreCartItems.removeAt(index);});String userId = FirebaseAuth.instance.currentUser!.uid;
+//     final cartCollection = FirebaseFirestore.instance
+//         .collection('usersCartData').doc(userId).collection('Cart');
+//     final querySnapshot = await cartCollection.get();
+//     if (querySnapshot.docs.isNotEmpty) {
+//       final docId = querySnapshot.docs[index].id;
+//       await cartCollection.doc(docId).delete();
+//     }SharedPreferences prefs = await SharedPreferences.getInstance();
+//     List<String>? cartData = prefs.getStringList('cartData') ?? [];
+//     if (index < cartData.length) {cartData.removeAt(index);await prefs.setStringList('cartData', cartData);}int updatedTotalPrice = firestoreCartItems.fold(
+//       0,
+//       (sum, item) => sum + int.parse(item['price'] ?? '0'),
+//     );setState(() {widget.totalPrice = updatedTotalPrice;});}
+//   void _showCheckoutBottomSheet(BuildContext context) {
+//     showModalBottomSheet(
+//       context: context,
+//       isScrollControlled:
+//           true, // This allows the bottom sheet to resize with the keyboard
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+//       ),
+//       builder: (BuildContext context) {
+//         return Padding(
+//           padding: EdgeInsets.only(
+//             bottom: MediaQuery.of(context)
+//                 .viewInsets
+//                 .bottom, // Adjusts padding based on keyboard visibility
+//             left: 20.0, right: 20.0, top: 20.0,
+//           ),
+//           child: SingleChildScrollView(
+//             reverse:
+//                 true, // This ensures the bottom sheet moves up when the keyboard appears
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Text(
+//                   'Order Summary',
+//                   style: TextStyle(
+//                     fontSize: 20,
+//                     fontWeight: FontWeight.bold,),),
+//                 LightDarktextField(
+//                   controller: addressController,
+//                   hintText: 'Address',
+//                   keyboardType: TextInputType.text,
+//                 ),
+//                 LightDarktextField(
+//                   controller: pinCodeController,
+//                   hintText: 'Pin Code',
+//                   keyboardType: TextInputType.number,
+//                 ),
+//                 SizedBox(height: 15),
+//                 ...firestoreCartItems.map(
+//                   (item) => Row(
+//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                     children: [
+//                       Text('Name: ${item['name']}'),
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.end,
+//                         crossAxisAlignment: CrossAxisAlignment.end,
+//                         children: [Icon(Icons.currency_rupee, size: 17),
+//                           Text('${item['price']}'),],),],),),
+//                 Divider(), Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   children: [Text('Total', style: TextStyle(fontSize: 18),), Row(children: [Icon(Icons.currency_rupee, size: 17), Text('${widget.totalPrice}', style: TextStyle(fontSize: 18),),],),],), SizedBox(height: 20),
+//                 GestureDetector(onTap: () {Navigator.pop(context); // Close the bottom sheet_startPayment();
+//                   }, child: Container(width: double.infinity,
+//                     padding: EdgeInsets.symmetric(vertical: 15),
+//                     decoration: BoxDecoration(
+//                       color: Colors.blue,
+//                       borderRadius: BorderRadius.circular(10),
+//                     ), child: Center(child: Text('Proceed to Payment', style: TextStyle(color: Colors.white, fontSize: 16),),),),),],),),);},);}
+//   void _startPayment() {
+//     if (kIsWeb) {
+//       // Web-specific Razorpay integration
+//       _startPaymentWeb();
+//     } else {
+//       // Mobile integration with Flutter plugin
+//       var options = {
+//         'key': 'rzp_test_4xCkdGHvFwGxuJ', // Replace with your key
+//         'amount': widget.totalPrice * 100, // Amount in paise
+//         'name': 'E-Cart App',
+//         'description': 'Order Payment',
+//         'prefill': {
+//           'contact': '8888888888',
+//           'email': 'test@razorpay.com'
+//         },
+//       };
+//
+//       try {
+//         _razorpay.open(options);
+//       } catch (e) {
+//         print("Error starting payment: $e");
+//       }
+//     }
+//   }
+//
+//   void _startPaymentWeb() {
+//     // Web-specific Razorpay options
+//     var options = {
+//       'key': 'rzp_test_4xCkdGHvFwGxuJ', // Replace with your Razorpay key
+//       'amount': widget.totalPrice * 100, // Amount in paise
+//       'currency': 'INR',
+//       'name': 'E-Cart App',
+//       'description': 'Order Payment',
+//       'handler': (response) {
+//         _handlePaymentSuccessWeb(response);
+//       },
+//       'prefill': {
+//         'name': 'Test User',
+//         'email': 'test@razorpay.com',
+//         'contact': '8888888888'
+//       },
+//     };
+//
+//     // Call the Razorpay checkout.js function directly for web
+//     if (kIsWeb) {
+//       // Web-specific Razorpay options
+//       html.window.open(
+//           'https://checkout.razorpay.com/v1/checkout.js?' +
+//               Uri(queryParameters: options).query,
+//           '_blank');
+//     } else {
+//       // For Android/iOS, use url_launcher to open the Razorpay URL in a browser
+//       _launchURL('https://checkout.razorpay.com/v1/checkout.js?' +
+//           Uri(queryParameters: options).query);
+//     }
+//   }
+//   Future<void> _launchURL(String url) async {
+//     //if (await canLaunch(url)) {
+//       await launch(url);
+//     //} else {
+//      // throw 'Could not launch $url';
+//    // }
+//   }
+//   void _handlePaymentSuccessWeb(dynamic response) async {print("Payment Success (Web): ${response['razorpay_payment_id']}");try {
+//       final paymentId = response['razorpay_payment_id'];final orderId = response['razorpay_order_id'];
+// final userId = FirebaseAuth.instance.currentUser!.uid; final cartCollection = FirebaseFirestore.instance.collection('CartData');
+//       final userCartCollection = FirebaseFirestore.instance
+//           .collection('usersCartData').doc(userId)
+//           .collection('Cart');final String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());print('----------------------DATA ADDING in Firestore collection .........');
+//       print(firestoreCartItems);for (var item in firestoreCartItems) {
+//         await cartCollection.add({'imageUrl': item['imageUrl'],
+//           'name': item['name'] ?? '', 'dob': item['dob'] ?? '',
+//           'blood': item['blood'] ?? '', 'price': item['price'] ?? '',
+//           'contact1': item['contact1'] ?? '', 'contact2': item['contact2'] ?? '',
+//           'orderNumber': generateRandomOrderNumber(), 'userId': userId,
+//           'orderId': orderId, 'paymentId': paymentId, 'address': addressController.text.toString(),
+//           'pinCode': pinCodeController.text.toString(), 'date': currentDate,
+//           'timestamp': FieldValue.serverTimestamp(),});}  final userCartDocs = await userCartCollection.get();
+//       for (var doc in userCartDocs.docs) {await doc.reference.delete();}SharedPreferences prefs = await SharedPreferences.getInstance();
+//       await prefs.clear();
+//       setState(() {firestoreCartItems.clear();
+//         widget.totalPrice = 0;});      _showSuccessDialog();
+//     } catch (e) {     print('Error processing payment and updating Firestore: $e');}}
+//   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+//     print("Payment Success: ${response.paymentId}");try {final userId = FirebaseAuth.instance.currentUser!.uid;
+//       final cartCollection = FirebaseFirestore.instance.collection('CartData');final userCartCollection = FirebaseFirestore.instance.collection('usersCartData').doc(userId).collection('Cart');
+//       final String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+//    for (var item in firestoreCartItems) {
+//      await cartCollection.add({'imageUrl': item['imageUrl'],
+//           'name': item['name'] ?? '',        'dob': item['dob'] ?? '',
+//           'blood': item['blood'] ?? '',        'price': item['price'] ?? '',
+//           'contact1': item['contact1'] ?? '',        'contact2': item['contact2'] ?? '',
+//           'orderNumber': generateRandomOrderNumber(),        'userId': userId,
+//           'orderId': response.orderId,        'paymentId': response.paymentId,
+//           'address': addressController.text.toString(),        'pinCode': pinCodeController.text.toString(),
+//           'date': currentDate,        'timestamp': FieldValue.serverTimestamp(),});}final userCartDocs = await userCartCollection.get();for (var doc in userCartDocs.docs) {await doc.reference.delete();}SharedPreferences prefs = await SharedPreferences.getInstance();await prefs.clear();setState(() {firestoreCartItems.clear();widget.totalPrice = 0;});_showSuccessDialog();} catch (e) {print('Error processing payment and updating Firestore: $e');}}
+//   void _handlePaymentError(PaymentFailureResponse response) {
+//     print("Payment Error: ${response.message}");
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: Text("Payment Failed"),
+//           content: Text(
+//               "Something went wrong. Please try again. Error: ${response.message}"),
+//           actions: [
+//             TextButton(
+//               child: Text("OK"),
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+//   void _handleExternalWallet(ExternalWalletResponse response) {
+//     print("External Wallet: ${response.walletName}");
+//   }
+//   void _showSuccessDialog() {
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: Text("Payment Success"),
+//           content:
+//               Text("Thank you for your purchase! Your order is confirmed."),
+//           actions: [
+//             TextButton(
+//               child: Text("OK"),
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+//   String generateRandomOrderNumber() {
+//     var rng = Random();
+//     return (rng.nextInt(900000) + 100000).toString();
+//   }}
+
+///TODO:-------------------------------------------------
+// Main CArtScreen Widget
+
+// class _CArtScreenState extends State<CArtScreen> {
+//   Razorpay _razorpay = Razorpay();
+//   List<Map<String, dynamic>> firestoreCartItems = [];
+//   TextEditingController addressController = TextEditingController();
+//   TextEditingController pinCodeController = TextEditingController();
+//   int totalPrice = 0;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+//     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+//     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+//
+//     // Fetch cart items from Firestore
+//     _fetchCartItemsFromFirestore();
+//   }
+//
+//   @override
+//   void dispose() {
+//     _razorpay.clear(); // Clear all listeners
+//     super.dispose();
+//   }
+//
+//   Future<void> _fetchCartItemsFromFirestore() async {
+//     firestoreCartItems = await ApiService().fetchCartItems();
+//     setState(() {
+//       totalPrice = ApiService().calculateTotalPrice(firestoreCartItems);
+//     });
+//   }
+//
+//   void _startPayment() {
+//     ApiService().startPayment(totalPrice, context, _razorpay);
+//   }
+//
+//   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+//     await ApiService().handlePaymentSuccess(response, addressController, pinCodeController, firestoreCartItems);
+//     setState(() {
+//       firestoreCartItems.clear();
+//       totalPrice = 0;
+//     });
+//   }
+//
+//   void _handlePaymentError(PaymentFailureResponse response) {
+//     ApiService().handlePaymentError(response, context);
+//   }
+//
+//   void _handleExternalWallet(ExternalWalletResponse response) {
+//     ApiService().handleExternalWallet(response);
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: Colors.transparent,
+//         title: Text('Cart'),
+//       ),
+//       floatingActionButton: firestoreCartItems.isEmpty
+//           ? null
+//           : CheckoutSection(totalPrice: totalPrice, onCheckout: _startPayment),
+//       body: firestoreCartItems.isEmpty
+//           ? EmptyCartWidget()
+//           : CartItemList(cartItems: firestoreCartItems, onDelete: (index) => _deleteCartItem(index)),
+//     );
+//   }
+//
+//   Future<void> _deleteCartItem(int index) async {
+//     await ApiService().deleteCartItem(index);
+//     setState(() {
+//       firestoreCartItems.removeAt(index);
+//       totalPrice = ApiService().calculateTotalPrice(firestoreCartItems);
+//     });
+//   }
+// }

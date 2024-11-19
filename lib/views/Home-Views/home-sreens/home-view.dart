@@ -473,6 +473,45 @@ class _HomeViewState extends State<HomeView> {
       _pendingRequestsCount = requestDocs.docs.length;
     });
   }
+  void _handleDeleteAccount() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.delete();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Account deleted successfully!")),
+        );
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(builder: (context) => const LoginView()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'requires-recent-login') {
+        errorMessage = "You need to re-login before deleting your account.";
+      } else {
+        errorMessage = "An error occurred. Please try again.";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("An unexpected error occurred.")),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

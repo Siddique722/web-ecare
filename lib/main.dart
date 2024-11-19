@@ -25,7 +25,8 @@ class MyApp extends StatelessWidget {
       designSize:Size(393, 852) ,
       builder: (context,child){
         return GetMaterialApp(
-            title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
+            title: 'E-Care',
             theme: ThemeData(
               // This is the theme of your application.
               //

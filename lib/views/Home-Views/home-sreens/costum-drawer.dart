@@ -153,12 +153,13 @@ import 'package:demo_app/constants/linker.dart';
 import 'package:demo_app/views/Home-Views/home-sreens/Affiliating/affiliate-home.dart';
 import 'package:demo_app/views/Home-Views/home-sreens/Privacy%20Policy/privacyPolicy.dart';
 import 'package:demo_app/views/Home-Views/home-sreens/TermsAndConditions/termsandconditions.dart';
+import 'package:ecare/constants/linker.dart';
+import 'package:ecare/views/Home-Views/home-sreens/Affiliating/affiliate-home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:demo_app/constants/linker.dart';
-import 'package:demo_app/views/Home-Views/home-sreens/Affiliating/affiliate-home.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

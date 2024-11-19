@@ -473,6 +473,7 @@ class _HomeViewState extends State<HomeView> {
       _pendingRequestsCount = requestDocs.docs.length;
     });
   }
+  bool _isLoading = false;
   void _handleDeleteAccount() async {
     setState(() {
       _isLoading = true;

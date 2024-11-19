@@ -528,7 +528,13 @@ class _HomeViewState extends State<HomeView> {
           const BackScreen(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
+            child:
+            _isLoading
+                ? const Center(
+              child: AppLoading(),
+            )
+                :
+            SingleChildScrollView(
               child: Column(
                 children: [
                   SizedBox(height: 40.h),

@@ -167,13 +167,14 @@ class CustomDrawer extends StatefulWidget {
   final String userEmail;
   final String userId;
   final VoidCallback onDeleteAccount;
-
+  final VoidCallback onLogoutAccount;
   const CustomDrawer({
     Key? key,
     required this.userName,
     required this.userEmail,
     required this.userId,
     required this.onDeleteAccount,
+    required this.onLogoutAccount,
   }) : super(key: key);
 
   @override
@@ -184,79 +185,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
   bool _isLoading = false;
 
   /// Show Logout Bottom Sheet
-  void _showLogoutBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? Colors.grey[900]
-          : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'What would you like to do?',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                      if (mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => const LoginView(),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text(
-                      'Logout',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -296,20 +224,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.pie_chart),
-                title: const Text('Affiliate'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    CupertinoDialogRoute(
-                      builder: (context) => AffliateHome(),
-                      context: context,
-                    ),
-                  );
-                },
-              ),
+              // ListTile(
+              //   leading: const Icon(Icons.pie_chart),
+              //   title: const Text('Affiliate'),
+              //   onTap: () {
+              //     Navigator.pop(context);
+              //     Navigator.push(
+              //       context,
+              //       CupertinoDialogRoute(
+              //         builder: (context) => AffliateHome(),
+              //         context: context,
+              //       ),
+              //     );
+              //   },
+              // ),
               ListTile(
                 leading: const Icon(Icons.rule),
                 title: const Text('Privacy Policy'),
@@ -351,7 +279,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 title: const Text('Logout'),
                 onTap: () {
                   Navigator.pop(context);
-                  _showLogoutBottomSheet(context);
+                  widget
+                      .onLogoutAccount(); // Corrected from widget.onDeleteAccount
                 },
               ),
             ],

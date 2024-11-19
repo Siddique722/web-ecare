@@ -136,10 +136,10 @@ class _LoginViewState extends State<LoginView> {
                         children: [
                           InkWell(
                             onTap: () {
-                              // Navigator.push(
-                              //     context,
-                              //     CupertinoPageRoute(
-                              //         builder: (context) => ReSetEmail()));
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (context) => ReSetEmail()));
                             },
                             child: Text('Forget Password?',
                                 style: TextStyle(

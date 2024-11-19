@@ -5,6 +5,7 @@ import 'package:ecare/views/Create-Profile-Views/combrobities.dart';
 import 'package:ecare/widgets/date-field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -357,16 +358,24 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   Map<String, dynamic> userProfileData = {};
-
   Future<void> _pickImage() async {
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _image = pickedFile;
       });
     }
   }
+
+  // Future<void> _pickImage() async {
+  //   final XFile? pickedFile =
+  //       await _picker.pickImage(source: ImageSource.gallery);
+  //   if (pickedFile != null) {
+  //     setState(() {
+  //       _image = pickedFile;
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {
@@ -484,43 +493,44 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 SizedBox(height: 20.0),
                 BoldTextWidgetTheme(text: 'Create Profile'),
                 SizedBox(height: 20.0),
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    width: 100.0,
-                    height: 100.0,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).secondaryHeaderColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if (_image != null)
-                          ClipOval(
-                            child: Image.file(
-                              File(_image!.path),
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        else
-                          Icon(
-                            Icons.camera_alt,
-                            color: Theme.of(context).primaryIconTheme.color,
-                            size: 40.0,
-                          ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: IconButton(
-                            icon: Icon(Icons.add_a_photo),
-                            onPressed: _pickImage,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildProfileImage(),
+                // GestureDetector(
+                //   onTap: _pickImage,
+                //   child: Container(
+                //     width: 100.0,
+                //     height: 100.0,
+                //     decoration: BoxDecoration(
+                //       color: Theme.of(context).secondaryHeaderColor,
+                //       shape: BoxShape.circle,
+                //     ),
+                //     child: Stack(
+                //       fit: StackFit.expand,
+                //       children: [
+                //         if (_image != null)
+                //           ClipOval(
+                //             child: Image.file(
+                //               File(_image!.path),
+                //               fit: BoxFit.cover,
+                //             ),
+                //           )
+                //         else
+                //           Icon(
+                //             Icons.camera_alt,
+                //             color: Theme.of(context).primaryIconTheme.color,
+                //             size: 40.0,
+                //           ),
+                //         Align(
+                //           alignment: Alignment.bottomRight,
+                //           child: IconButton(
+                //             icon: Icon(Icons.add_a_photo),
+                //             onPressed: _pickImage,
+                //             color: Theme.of(context).primaryColor,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: 20.0),
                 LightDarktextField(
                   keyboardType: TextInputType.text,
@@ -639,4 +649,37 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       ),
     );
   }
+  Widget _buildProfileImage() {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Container(
+        width: 100.0,
+        height: 100.0,
+        decoration: BoxDecoration(
+          color: Theme.of(context).secondaryHeaderColor,
+          shape: BoxShape.circle,
+        ),
+        child: _image != null
+            ? (kIsWeb
+            ? ClipOval(
+          child: Image.network(
+            _image!.path, // Use the path as URL for web
+            fit: BoxFit.cover,
+          ),
+        )
+            : ClipOval(
+          child: Image.file(
+            File(_image!.path), // Use the file for mobile
+            fit: BoxFit.cover,
+          ),
+        ))
+            : Icon(
+          Icons.camera_alt,
+          color: Theme.of(context).primaryIconTheme.color,
+          size: 40.0,
+        ),
+      ),
+    );
+  }
+
 }

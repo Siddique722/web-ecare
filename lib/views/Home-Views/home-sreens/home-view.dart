@@ -478,6 +478,8 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: CustomDrawer(
+        userId: userId,
+        onDeleteAccount: ,
         userName: _userName,
         userEmail: userEmail,
       ),

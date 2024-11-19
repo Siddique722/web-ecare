@@ -519,7 +519,7 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       drawer: CustomDrawer(
         userId: userId,
-        onDeleteAccount: ,
+        onDeleteAccount: _handleDeleteAccount,
         userName: _userName,
         userEmail: userEmail,
       ),

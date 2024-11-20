@@ -203,7 +203,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.white,
-                      backgroundImage: AssetImage('asstes/applogo.png'),
+                      backgroundImage: AssetImage('assets/applogo.png'),
                     ),
                     const SizedBox(height: 10),
                     Text(

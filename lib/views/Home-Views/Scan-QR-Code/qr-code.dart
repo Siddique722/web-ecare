@@ -56,10 +56,9 @@ class _ScanQRCodeHomwState extends State<ScanQRCodeHomw> {
               height: 20.h,
             ),
             SimpleTextWidgetTheme(
-                text:'Hello'
-                  //  '**Your medical data cannot be accessed by anyone includeing the doctor without your authentication'),
-        ),
-        ],
+                text:
+                    '**Your medical data cannot be accessed by anyone includeing the doctor without your authentication'),
+          ],
         ),
       ),
     );
@@ -125,7 +124,7 @@ class _QRViewExampleState extends State<QRViewExample> {
         if (userDoc.docs.isNotEmpty) {
           final userData = userDoc.docs.first.data();
           final email = userData['email'];
-       //  log('==============================================2');
+          //  log('==============================================2');
           print('USer email=$email  =================================');
           // Stop the camera and navigate to the result screen
           controller.dispose();
@@ -156,7 +155,7 @@ class _QRViewExampleState extends State<QRViewExample> {
 
             // Loop through the list of 'docId' and check each subcollection
             for (var docId in familyUserDocIds) {
-             // log('Checking for primaryContact in docId: $docId');
+              // log('Checking for primaryContact in docId: $docId');
 
               // Get the 'userProfileData' subcollection for each 'familyUser' document
               final familyUserProfileData = await FirebaseFirestore.instance
@@ -173,7 +172,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                 final email = userData['email'];
 
                 // Log found user data
-              //  log('User found with email: $email');
+                //  log('User found with email: $email');
 
                 // Stop the camera and navigate to the result screen
                 controller.dispose();
@@ -202,7 +201,7 @@ class _QRViewExampleState extends State<QRViewExample> {
               controller.resumeCamera();
             }
           } catch (e) {
-           // log('Error: $e');
+            // log('Error: $e');
           }
         }
 

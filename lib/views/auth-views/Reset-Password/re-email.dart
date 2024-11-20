@@ -219,7 +219,7 @@ class _ReSetEmailState extends State<ReSetEmail> {
                       fontSize: 30.sp,
                     )),
                 Text(
-                  ' Care',
+                  '-Care',
                   style: TextStyle(
                       fontFamily: "Gilroy",
                       color: AppColors.blueColor,

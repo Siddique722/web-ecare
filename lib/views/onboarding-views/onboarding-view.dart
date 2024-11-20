@@ -335,7 +335,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   fontSize: 24.0,
                 )),
             Text(
-              ' Care',
+              '-Care',
               style: TextStyle(
                   fontFamily: "Gilroy",
                   color: AppColors.blueColor,
@@ -354,7 +354,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-     // backgroundColor: Theme.of(context).colorScheme.error,
+      // backgroundColor: Theme.of(context).colorScheme.error,
       body: Stack(
         children: [
           PageView(

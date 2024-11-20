@@ -80,7 +80,7 @@ class _SignupViewState extends State<SignupView> {
                       fontSize: 24.sp,
                     )),
                 Text(
-                  ' Care',
+                  '-Care',
                   style: TextStyle(
                       fontFamily: "Gilroy",
                       color: AppColors.blueColor,

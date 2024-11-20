@@ -49,21 +49,21 @@ class _EmailVerificationLinkState extends State<EmailVerificationLink> {
     });
   }
 
- void startEmailVerificationCheck() {
-  timer = Timer.periodic(Duration(seconds: 5), (timer) async {
-    await FirebaseAuth.instance.currentUser?.reload();
-    User? user = FirebaseAuth.instance.currentUser;
+  void startEmailVerificationCheck() {
+    timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      await FirebaseAuth.instance.currentUser?.reload();
+      User? user = FirebaseAuth.instance.currentUser;
 
-    // if (user != null && user.emailVerified==true) {
-    //   timer.cancel();
-    //   countdownTimer.cancel();
-    //   Navigator.pushReplacement(
-    //     context,
-    //     CupertinoPageRoute(builder: (context) => WraperScreen()),
-    //   );
-    // }
-  });
-}
+      // if (user != null && user.emailVerified==true) {
+      //   timer.cancel();
+      //   countdownTimer.cancel();
+      //   Navigator.pushReplacement(
+      //     context,
+      //     CupertinoPageRoute(builder: (context) => WraperScreen()),
+      //   );
+      // }
+    });
+  }
 
   void startCountdown() {
     countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -110,63 +110,130 @@ class _EmailVerificationLinkState extends State<EmailVerificationLink> {
       );
     });
   }
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text('Email Verification'),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.logout),
-          onPressed: logout,
-        ),
-      ],
-    ),
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          BoldTextWidgetTheme(text: 'Verification Screen'),
-          SimpleTextWidgetTheme(
-              text: 'We have sent an email for verification to ${FirebaseAuth.instance.currentUser?.email ?? 'your email'}'),
-          SizedBox(height: 20),
-          isResendButtonVisible
-              ? InkWell(
-                  onTap: () {
-                    sendVerificationEmail();
-                    resetCountdown();
-                  },
-                  child: BlueButton(text: 'Resend Verification Email'),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SimpleTextWidgetTheme(text: 'Resend Email in '),
-                    BoldTextWidgetTheme(text: '$countdown seconds'),
-                  ],
-                ),
-          SizedBox(height: 20),
-          InkWell(
-            onTap: () {
-              String currentEmail =
-                  FirebaseAuth.instance.currentUser?.email ?? '';
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) => EmailEditScreen(email: currentEmail,),
-                ),
-              ).then((value) {
-                // Restart the verification check
-                startEmailVerificationCheck();
-              });
-            },
-            child: BlueButton(text: 'Edit Email'),
+
+  @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//     appBar: AppBar(
+//       title: Text('Email Verification'),
+//       actions: [
+//         IconButton(
+//           icon: Icon(Icons.logout),
+//           onPressed: logout,
+//         ),
+//       ],
+//     ),
+//     body: Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           BoldTextWidgetTheme(text: 'Verification Screen'),
+//           SimpleTextWidgetTheme(
+//               text: 'We have sent an email for verification to ${FirebaseAuth.instance.currentUser?.email ?? 'your email'}'),
+//           SizedBox(height: 20),
+//           isResendButtonVisible
+//               ? InkWell(
+//                   onTap: () {
+//                     sendVerificationEmail();
+//                     resetCountdown();
+//                   },
+//                   child: BlueButton(text: 'Resend Verification Email'),
+//                 )
+//               : Row(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     SimpleTextWidgetTheme(text: 'Resend Email in '),
+//                     BoldTextWidgetTheme(text: '$countdown seconds'),
+//                   ],
+//                 ),
+//           SizedBox(height: 20),
+//           InkWell(
+//             onTap: () {
+//               String currentEmail =
+//                   FirebaseAuth.instance.currentUser?.email ?? '';
+//               Navigator.push(
+//                 context,
+//                 CupertinoPageRoute(
+//                   builder: (context) => EmailEditScreen(email: currentEmail,),
+//                 ),
+//               ).then((value) {
+//                 // Restart the verification check
+//                 startEmailVerificationCheck();
+//               });
+//             },
+//             child: BlueButton(text: 'Edit Email'),
+//           ),
+//         ],
+//       ),
+//     ),
+//   );
+// }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Email Verification'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: logout,
           ),
         ],
       ),
-    ),
-  );
-}
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Note added at the top
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SimpleTextWidgetTheme(
+                text:
+                    'Note: If auto-redirect doesn’t occur after verification\nplease refresh the page.',
+              ),
+            ),
+            SizedBox(height: 10),
+            BoldTextWidgetTheme(text: 'Verification Screen'),
+            SimpleTextWidgetTheme(
+                text:
+                    'We have sent an email for verification to\n${FirebaseAuth.instance.currentUser?.email ?? '\nyour email'}'),
+            SizedBox(height: 20),
+            isResendButtonVisible
+                ? InkWell(
+                    onTap: () {
+                      sendVerificationEmail();
+                      resetCountdown();
+                    },
+                    child: BlueButton(text: 'Resend Verification Email'),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SimpleTextWidgetTheme(text: 'Resend Email in '),
+                      BoldTextWidgetTheme(text: '$countdown seconds'),
+                    ],
+                  ),
+            SizedBox(height: 20),
+            InkWell(
+              onTap: () {
+                String currentEmail =
+                    FirebaseAuth.instance.currentUser?.email ?? '';
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => EmailEditScreen(email: currentEmail),
+                  ),
+                ).then((value) {
+                  // Restart the verification check
+                  startEmailVerificationCheck();
+                });
+              },
+              child: BlueButton(text: 'Edit Email'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   // @override
   // Widget build(BuildContext context) {

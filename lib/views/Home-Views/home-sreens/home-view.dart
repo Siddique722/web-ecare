@@ -1,5 +1,5 @@
 // import 'package:demo_app/TODo-Bloc/repository/todo_repo.dart';
- import 'package:ecare/views/Admin-View/admin-view.dart';
+import 'package:ecare/views/Admin-View/admin-view.dart';
 import 'package:ecare/views/Home-Views/Docuemnts/show-folder.dart';
 import 'package:ecare/views/Home-Views/Scan-QR-Code/qr-code.dart';
 import 'package:ecare/views/Home-Views/Users-View/show-users.dart';
@@ -12,7 +12,7 @@ import 'package:ecare/views/Home-Views/home-sreens/home-back-screen.dart';
 import 'package:ecare/views/Home-Views/home-sreens/widgets/container-button-widget.dart';
 import 'package:ecare/views/Home-Views/home-sreens/widgets/notification-widget.dart';
 import 'package:flutter/cupertino.dart';
- import 'dart:developer' as dev;
+import 'dart:developer' as dev;
 
 import 'package:ecare/constants/linker.dart';
 
@@ -473,6 +473,7 @@ class _HomeViewState extends State<HomeView> {
       _pendingRequestsCount = requestDocs.docs.length;
     });
   }
+
   bool _isLoading = false;
   void _handleDeleteAccount() async {
     final bool? confirmDeletion = await showDialog<bool>(
@@ -545,6 +546,7 @@ class _HomeViewState extends State<HomeView> {
       }
     }
   }
+
   void _showLogoutBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -622,7 +624,6 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: CustomDrawer(
-
         onLogoutAccount: () {
           _showLogoutBottomSheet(context);
         },
@@ -636,71 +637,69 @@ class _HomeViewState extends State<HomeView> {
           const BackScreen(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child:
-            _isLoading
+            child: _isLoading
                 ? const Center(
-              child: AppLoading(),
-            )
-                :
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: 40.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Wrap the IconButton in a Builder widget to get the correct Scaffold context
-                      Builder(
-                        builder: (context) => IconButton(
-                          icon: const Icon(Icons.menu),
-                          onPressed: () {
-                            Scaffold.of(context)
-                                .openDrawer(); // This now works correctly
-                          },
-                        ),
-                      ),
+                    child: AppLoading(),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 40.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Wrap the IconButton in a Builder widget to get the correct Scaffold context
+                            Builder(
+                              builder: (context) => IconButton(
+                                icon: const Icon(Icons.menu),
+                                onPressed: () {
+                                  Scaffold.of(context)
+                                      .openDrawer(); // This now works correctly
+                                },
+                              ),
+                            ),
 
-                      // Flexible will ensure that the text wraps to the next line if needed
-                      Flexible(
-                        child: BoldTextWidget(
-                          text: 'Welcome: $_userName',
-                          textColor: Colors.white,
-                          textsize: 18,
-                          overflow:
-                              TextOverflow.visible, // Ensure the text can wrap
-                        ),
-                      ),
+                            // Flexible will ensure that the text wraps to the next line if needed
+                            Flexible(
+                              child: BoldTextWidget(
+                                text: 'Welcome: $_userName',
+                                textColor: Colors.white,
+                                textsize: 18,
+                                overflow: TextOverflow
+                                    .visible, // Ensure the text can wrap
+                              ),
+                            ),
 
-                      Row(
-                        children: [
-                          NotificationIcon(
-                            userID: userEmail,
-                            pendingRequestsCount: _pendingRequestsCount,
-                          ),
-                        ],
-                      ),
-                    ],
+                            Row(
+                              children: [
+                                NotificationIcon(
+                                  userID: userEmail,
+                                  pendingRequestsCount: _pendingRequestsCount,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 30.h),
+                        _buildFindUserButton(),
+                        SizedBox(height: 90.h),
+                        _buildMainButtons(),
+                        SizedBox(height: 20.h),
+                        _buildSecondaryButtons(),
+                        userEmail == 'thomasjosephthiruthanathil@gmail.com'
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (context) => AdminView()));
+                                },
+                                child: BlueButton(text: 'Admin'),
+                              )
+                            : SizedBox(),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 30.h),
-                  _buildFindUserButton(),
-                  SizedBox(height: 90.h),
-                  _buildMainButtons(),
-                  SizedBox(height: 20.h),
-                  _buildSecondaryButtons(),
-                  userEmail == 'thomasjosephthiruthanathil@gmail.com'
-                      ? InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => AdminView()));
-                          },
-                          child: BlueButton(text: 'Admin'),
-                        )
-                      : SizedBox(),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -803,9 +802,10 @@ class _HomeViewState extends State<HomeView> {
           onTap: () {
             Navigator.push(
                 context,
-                CupertinoPageRoute(
+                CupertinoDialogRoute(
                     builder: (context) =>
-                        ShowUsersView(role: 'edit', userid: userId)));
+                        ShowUsersView(role: 'edit', userid: userId),
+                    context: context));
           },
         ),
         ContainerButton(

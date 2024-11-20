@@ -812,18 +812,23 @@ class _HomeViewState extends State<HomeView> {
           text: 'Documents',
           image: 'docs',
           onTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const FoldersView()));
+            Navigator.push(
+                context,
+                CupertinoDialogRoute(
+                    builder: (context) => const FoldersView(),
+                    context: context));
           },
         ),
         ContainerButton(
-          text: 'Consult\nDoctor',
+          text: 'Consult Doctor',
           image: 'doctor',
           onTap: () {
             Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => const ConsultDoctor()));
+              context,
+              CupertinoDialogRoute(
+                  builder: (context) => const ConsultDoctor(),
+                  context: context),
+            );
           },
         ),
       ],
@@ -840,24 +845,29 @@ class _HomeViewState extends State<HomeView> {
           onTap: () {
             Navigator.push(
                 context,
-                CupertinoPageRoute(
-                    builder: (context) => const AmbulanceView()));
+                CupertinoDialogRoute(
+                    builder: (context) => const AmbulanceView(),
+                    context: context));
           },
         ),
         ContainerButton(
           text: 'Contact Us',
           image: 'contact',
           onTap: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => const Contact()));
+            Navigator.push(
+                context,
+                CupertinoDialogRoute(
+                    builder: (context) => const Contact(), context: context));
           },
         ),
         ContainerButton(
           text: 'About Us',
           image: 'about',
           onTap: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => const AboutUs()));
+            Navigator.push(
+                context,
+                CupertinoDialogRoute(
+                    builder: (context) => const AboutUs(), context: context));
           },
         ),
       ],

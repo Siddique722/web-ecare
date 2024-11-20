@@ -56,9 +56,10 @@ class _ScanQRCodeHomwState extends State<ScanQRCodeHomw> {
               height: 20.h,
             ),
             SimpleTextWidgetTheme(
-                text:
-                    '**Your medical data cannot be accessed by anyone includeing the doctor without your authentication'),
-          ],
+                text:'Hello'
+                  //  '**Your medical data cannot be accessed by anyone includeing the doctor without your authentication'),
+        ),
+        ],
         ),
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:demo_app/widgets/text-widgets.dart';
+import 'package:ecare/widgets/text-widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';

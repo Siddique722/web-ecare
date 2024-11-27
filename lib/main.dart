@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       builder: (context,child){
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-            title: 'E-Care',
+            title: 'H Pulse',
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
             themeMode: ThemeMode.system,

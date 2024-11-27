@@ -73,14 +73,14 @@ class _SignupViewState extends State<SignupView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('E',
+                Text('H',
                     style: TextStyle(
                       fontFamily: "GilroyBold",
                       color: AppColors.blueColor,
                       fontSize: 24.sp,
                     )),
                 Text(
-                  '-Care',
+                  'Pulse',
                   style: TextStyle(
                       fontFamily: "Gilroy",
                       color: AppColors.blueColor,

@@ -85,7 +85,7 @@ class _LoginViewState extends State<LoginView> {
                       fontSize: 30.sp,
                     )),
                 Text(
-                  'Pulse',
+                  ' Pulse',
                   style: TextStyle(
                       fontFamily: "Gilroy",
                       color: AppColors.blueColor,

@@ -156,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 'assets/applogo.png' //AppImages.splash,fit: BoxFit.fill,
                 ),
           ),
-         
+
           SizedBox(
             height: 20,
           ),

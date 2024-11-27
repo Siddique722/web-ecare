@@ -335,7 +335,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   fontSize: 24.0,
                 )),
             Text(
-              'Pulse',
+              ' Pulse',
               style: TextStyle(
                   fontFamily: "Gilroy",
                   color: AppColors.blueColor,

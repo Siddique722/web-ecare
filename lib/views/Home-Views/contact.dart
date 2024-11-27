@@ -1,9 +1,7 @@
-// import 'package:demo_app/widgets/text-widgets.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
- import 'package:url_launcher/url_launcher.dart';
-
-import 'package:ecare/constants/linker.dart';
+import 'package:demo_app/widgets/text-widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Contact extends StatefulWidget {
   const Contact({super.key});
@@ -24,11 +22,11 @@ class _ContactState extends State<Contact> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BoldTextWidgetTheme(text: 'Contact'),
+            BoldTextWidgetTheme(text: 'We’d Love to Hear From You!'),
             SizedBox(height: 10.h),
             SimpleTextWidgetTheme(
               text:
-                  'For all questions, recommendations and to report bugs , contact us through email or instagram ',
+              'Got questions?, Suggestions? Found a bug? We\'re here to help! Reach out to us through:  ',
             ),
             SizedBox(height: 10.h),
             SimpleTextWidgetTheme(
@@ -59,9 +57,10 @@ class _ContactState extends State<Contact> {
             ),
             SizedBox(height: 14.h),
             SimpleTextWidgetTheme(
-              text:
-                  '**The above mentioned contacts will change once the company gets an official email ID, Instagram page and contact number',
+                text:'Adress\nRoom No. 2, 2nd floor, building adj. To CPIM party office, cheruthoni, Idukki, Kerala, India pin. 685602'
             ),
+            SizedBox(height: 14.h,),
+            SimpleTextWidgetTheme(text: 'Note:\nThese contacts will be updated with our official email, Instagram page, and contact number as soon as they’re available. Stay tuned!',)
           ],
         ),
       ),

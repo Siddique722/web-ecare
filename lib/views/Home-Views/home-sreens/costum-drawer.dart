@@ -267,6 +267,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.rule_folder_rounded),
+                title: const Text('Cancellation and refund policy'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    CupertinoDialogRoute(
+                      builder: (context) => RefundPolicy(),
+                      context: context,
+                    ),
+                  );
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.delete),
                 title: const Text('Delete Account'),
                 onTap: () {

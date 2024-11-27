@@ -156,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 'assets/applogo.png' //AppImages.splash,fit: BoxFit.fill,
                 ),
           ),
-          LogoRowText(),
+         
           SizedBox(
             height: 20,
           ),
@@ -198,14 +198,14 @@ class LogoRowText extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('E',
+        Text('H',
             style: TextStyle(
               fontFamily: "GilroyBold",
               color: Color(0xffc2b7f0),
               fontSize: 35.sp,
             )),
         Text(
-          '-Care',
+          ' Pulse',
           style: TextStyle(
               fontFamily: "Gilroy",
               color: Color(0xffa18feb),

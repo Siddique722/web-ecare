@@ -48,14 +48,14 @@ class _OTPScreenState extends State<OTPScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('E',
+                Text('H',
                     style: TextStyle(
                       fontFamily: "GilroyBold",
                       color: AppColors.blueColor,
                       fontSize: 30.sp,
                     )),
                 Text(
-                  ' Care',
+                  ' Pulse',
                   style: TextStyle(
                       fontFamily: "Gilroy",
                       color: AppColors.blueColor,

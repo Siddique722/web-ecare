@@ -120,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(seconds: 4), () {
+    Future.delayed(Duration(seconds: 40000), () {
       isUserLOgin();
       //  Navigator.pushReplacement(context, CupertinoPageRoute(
       //  builder: (context)=>OnboardingScreen()));
@@ -144,47 +144,49 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Color(0xff0073E8),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            // height: double.infinity,
-            //width: double.infinity,
-            child: Image.asset(
-                height: 90,
-                'assets/applogo.png' //AppImages.splash,fit: BoxFit.fill,
-                ),
-          ),
+       backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              // height: double.infinity,
+              //width: double.infinity,
+              child: Image.asset(
+                  height: 140,
+                  'assets/applogo.png' //AppImages.splash,fit: BoxFit.fill,
+                  ),
+            ),
 
-          SizedBox(
-            height: 20,
-          ),
+            // SizedBox(
+            //   height: 20,
+            // ),
 
-          // Padding(
-          //   padding: const EdgeInsets.only(bottom: 18.0),
-          //   child: Column(
-          //     children: [
-          //       Text(
-          //         'powered by',
-          //         style: TextStyle(
-          //           color: Colors.white,
-          //           fontFamily: "Gilroy",
-          //         ),
-          //       ),
-          //       Text(
-          //         'Company Name LTD',
-          //         style: TextStyle(
-          //           color: Colors.white,
-          //           fontSize: 15.sp,
-          //           fontWeight: FontWeight.bold,
-          //           fontFamily: "GilroyBold",
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // )
-        ],
+            // Padding(
+            //   padding: const EdgeInsets.only(bottom: 18.0),
+            //   child: Column(
+            //     children: [
+            //       Text(
+            //         'powered by',
+            //         style: TextStyle(
+            //           color: Colors.white,
+            //           fontFamily: "Gilroy",
+            //         ),
+            //       ),
+            //       Text(
+            //         'Company Name LTD',
+            //         style: TextStyle(
+            //           color: Colors.white,
+            //           fontSize: 15.sp,
+            //           fontWeight: FontWeight.bold,
+            //           fontFamily: "GilroyBold",
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // )
+          ],
+        ),
       ),
     );
   }

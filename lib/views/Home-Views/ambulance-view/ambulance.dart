@@ -40,36 +40,54 @@ class _AmbulanceViewState extends State<AmbulanceView> {
   }
 
   Future<void> fetchFilteredAmbulances(String searchTerm) async {
-    String userId = FirebaseAuth.instance.currentUser!.uid;
-
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
+    // Fetch all 'id' values from the 'ambulances' collection
+    QuerySnapshot ambulanceDocsSnapshot = await FirebaseFirestore.instance
         .collection('ambulances')
-        .doc(userId)
-        .collection('userambulance')
         .get();
 
-    List<Map<String, dynamic>> allAmbulances = snapshot.docs.map((doc) {
-      return doc.data() as Map<String, dynamic>;
-    }).toList();
+    // Extract 'id' field values and store them in a list
+    List<String> ids = ambulanceDocsSnapshot.docs
+        .map((doc) => doc['id']?.toString() ?? '')
+        .toList();
 
+    List<Map<String, dynamic>> allAmbulances = [];
+
+    // Use the 'id' values to match and fetch data from the respective documents
+    for (var id in ids) {
+      // Match 'id' with document and fetch the 'userambulance' subcollection
+      QuerySnapshot userAmbulanceSnapshot = await FirebaseFirestore.instance
+          .collection('ambulances')
+          .doc(id) // Match with 'id'
+          .collection('userambulance')
+          .get();
+
+      // Add the data from each document in 'userambulance' subcollection
+      allAmbulances.addAll(userAmbulanceSnapshot.docs.map((subDoc) {
+        return subDoc.data() as Map<String, dynamic>;
+      }).toList());
+    }
+
+    // Filter ambulances based on the search term
     setState(() {
       filteredAmbulances = allAmbulances.where((ambulance) {
         final district = ambulance['district']?.toString().toLowerCase() ?? '';
         final city = ambulance['city']?.toString().toLowerCase() ?? '';
         final ambulanceRegistrationNumber =
             ambulance['ambulanceRegistrationNumber']
-                    ?.toString()
-                    .toLowerCase() ??
+                ?.toString()
+                .toLowerCase() ??
                 '';
         final ambulanceType =
             ambulance['ambulanceType']?.toString().toLowerCase() ?? '';
         final pinCode = ambulance['pinCode']?.toString().toLowerCase() ?? '';
-
+        final ambulanceName =
+            ambulance['nameofambulanceservice']?.toString().toLowerCase() ?? '';
         return district.contains(searchTerm.toLowerCase()) ||
             city.contains(searchTerm.toLowerCase()) ||
             ambulanceRegistrationNumber.contains(searchTerm.toLowerCase()) ||
             ambulanceType.contains(searchTerm.toLowerCase()) ||
-            pinCode.contains(searchTerm.toLowerCase());
+            pinCode.contains(searchTerm.toLowerCase()) ||
+            ambulanceName.contains(searchTerm.toLowerCase());
       }).toList();
     });
   }

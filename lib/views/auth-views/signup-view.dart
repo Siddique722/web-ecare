@@ -159,7 +159,20 @@ class _SignupViewState extends State<SignupView> {
                         _isLoading
                             ? const AppLoading()
                             : InkWell(
-                          onTap: _signUp,
+                          onTap:(){
+                            if(_passwordController.text!=_confirmPasswordController.text)
+                              {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Passwords do not match'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            else
+                          _signUp();
+
+                          },
                           child: BlueButton(text: 'Signup'),
                         ),
                         SizedBox(

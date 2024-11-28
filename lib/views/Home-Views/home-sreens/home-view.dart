@@ -686,6 +686,7 @@ class _HomeViewState extends State<HomeView> {
                         _buildMainButtons(),
                         SizedBox(height: 20.h),
                         _buildSecondaryButtons(),
+                        SizedBox(height: 20.h),
                         userEmail == 'thomasjosephthiruthanathil@gmail.com'
                             ? InkWell(
                                 onTap: () {

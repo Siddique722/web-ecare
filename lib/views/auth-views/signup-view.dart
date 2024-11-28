@@ -12,6 +12,7 @@ class SignupView extends StatefulWidget {
 class _SignupViewState extends State<SignupView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _usernameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -137,11 +138,20 @@ class _SignupViewState extends State<SignupView> {
                           controller: _emailController,
                         ),
                         SizedBox(height: 20.h),
-                        CustomTextFormField(
+                        CustomPasswordFormField(
                           hintText: 'Password',
                           keyboardType: TextInputType.text,
                           isPassword: true,
                           controller: _passwordController,
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        CustomPasswordFormField(
+                          hintText: 'Confirm Password',
+                          keyboardType: TextInputType.text,
+                          isPassword: true,
+                          controller: _confirmPasswordController,
                         ),
                         SizedBox(
                           height: 20.h,
@@ -188,6 +198,108 @@ class _SignupViewState extends State<SignupView> {
           ),
         ],
       ),
+    );
+  }
+}
+class CustomPasswordFormField extends StatefulWidget {
+  final String? hintText;
+  final TextInputType? keyboardType;
+  final bool? isPassword;
+  final Widget? prefixIcon;
+  final TextEditingController? controller;
+
+  const CustomPasswordFormField({
+    Key? key,
+    this.hintText,
+    this.prefixIcon,
+    this.keyboardType,
+    this.isPassword,
+    required this.controller,
+  }) : super(key: key);
+
+  @override
+  State<CustomPasswordFormField> createState() => _CustomPasswordFormFieldState();
+}
+
+class _CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
+  bool _isObscured = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      keyboardType: widget.keyboardType ?? TextInputType.text,
+      obscureText: widget.isPassword == true ? _isObscured : false,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: widget.isPassword == true
+            ? IconButton(
+          icon: Icon(
+            _isObscured ? Icons.visibility : Icons.visibility_off,
+            color: Colors.grey,
+          ),
+          onPressed: () {
+            setState(() {
+              _isObscured = !_isObscured;
+            });
+          },
+        )
+            : null,
+        hintText: widget.hintText ?? " ",
+        hintStyle: const TextStyle(color: Colors.black),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Colors.grey,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Colors.black,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 2.0,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 2.0,
+          ),
+        ),
+        errorStyle: const TextStyle(
+          color: Colors.red,
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your ${widget.hintText}';
+        }
+        if (widget.hintText == 'Username' &&
+            !RegExp(r'^[a-zA-Z]').hasMatch(value)) {
+          return 'Username must start with a letter';
+        }
+        if (widget.hintText == 'Email' &&
+            !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+          return 'Please enter a valid email address';
+        }
+        if (widget.hintText == 'Password' && value.length < 8) {
+          return 'Password must be at least 8 characters long';
+        }
+        if (widget.hintText == 'Password' &&
+            !RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&()])[A-Za-z\d@$!%*?&]{8,}$')
+                .hasMatch(value)) {
+          return 'Password must contain letters, numbers, and special characters';
+        }
+        return null;
+      },
     );
   }
 }

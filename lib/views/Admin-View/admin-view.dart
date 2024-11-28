@@ -451,48 +451,48 @@ class _AdminViewState extends State<AdminView> {
               //   ],
               // );
 
-              // return Card(
-              //   margin: EdgeInsets.all(8.0),
-              //   child: ListTile(
-              //     leading: CircleAvatar(
-              //       backgroundImage: NetworkImage(cartItem['imageUrl']),
-              //       backgroundColor: Colors.grey[200],
-              //       onBackgroundImageError: (exception, stackTrace) {
-              //         print('Error loading image: $exception');
-              //       },
-              //       child: Icon(Icons.person), // Fallback icon when image fails
-              //     ),
-              //     title: Stack(
-              //       children: [
-              //         Row(
-              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //           children: [
-              //             Text("${cartItem['name']}"),
-              //             CircleAvatar(child: Text("$index")),
-              //           ],
-              //         ),
-              //       ],
-              //     ),
-              //     subtitle: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Text('Blood Group: ${cartItem['blood']}'),
-              //         Text('Date of Birth: ${cartItem['dob']}'),
-              //         Text('Order Number: ${cartItem['orderNumber']}'),
-              //         Text('Price: ${cartItem['price']}'),
-              //         Text('Primary Contact: ${cartItem['primaryContact']}'),
-              //         Text(
-              //             'Emergency Contact 1: ${cartItem['emergencyContact1']}'),
-              //         Text(
-              //             'Emergency Contact 2: ${cartItem['emergencyContact2']}'),
-              //         Text('User Email: ${cartItem['userEmail']}'),
-              //         Text('Pin Code: ${cartItem['pinCode']}'),
-              //         Text('Address: ${cartItem['address']}'),
-              //         Text('Order Date: ${cartItem['date']}'),
-              //       ],
-              //     ),
-              //   ),
-              // );
+              return Card(
+                margin: EdgeInsets.all(8.0),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(cartItem['imageUrl']),
+                    backgroundColor: Colors.grey[200],
+                    onBackgroundImageError: (exception, stackTrace) {
+                      print('Error loading image: $exception');
+                    },
+                    child: Icon(Icons.person), // Fallback icon when image fails
+                  ),
+                  title: Stack(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("${cartItem['name']}"),
+                          CircleAvatar(child: Text("$index")),
+                        ],
+                      ),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Blood Group: ${cartItem['blood']}'),
+                      Text('Date of Birth: ${cartItem['dob']}'),
+                      Text('Order Number: ${cartItem['orderNumber']}'),
+                      Text('Price: ${cartItem['price']}'),
+                      Text('Primary Contact: ${cartItem['primaryContact']}'),
+                      Text(
+                          'Emergency Contact 1: ${cartItem['emergencyContact1']}'),
+                      Text(
+                          'Emergency Contact 2: ${cartItem['emergencyContact2']}'),
+                      Text('User Email: ${cartItem['userEmail']}'),
+                      Text('Pin Code: ${cartItem['pinCode']}'),
+                      Text('Address: ${cartItem['address']}'),
+                      Text('Order Date: ${cartItem['date']}'),
+                    ],
+                  ),
+                ),
+              );
             }).toList()),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {

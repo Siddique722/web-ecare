@@ -327,129 +327,129 @@ class _AdminViewState extends State<AdminView> {
 
               _cartDataList.add(cartItem); // Populate the global list
               print("Showing items in cart length:${cartItem.length}");
-              return ExpansionTile(
-                leading: CircleAvatar(
-                  radius: 30, // Adjust size for better proportion
-                  backgroundImage: NetworkImage(cartItem['imageUrl']),
-                  onBackgroundImageError: (exception, stackTrace) {
-                    print('Error loading image: $exception');
-                  },
-                  child: Icon(
-                    Icons.person,
-                    size: 30, // Adjust icon size
-                    color: Colors.white,
-                  ), // Fallback icon when image fails
-                ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: AppColors.whiteColor)),
-                title: Padding(
-                  padding: EdgeInsets.all(16.0), // Padding inside the card
-                  child: ListTile(
-                    contentPadding:
-                        EdgeInsets.zero, // Remove default padding from ListTile
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "${cartItem['name']}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0, // Larger font for the name
-                          ),
-                        ),
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.blueAccent,
-                          child: Text(
-                            "$index",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    subtitle: Padding(
-                      padding: EdgeInsets.only(
-                          top: 8.0), // Padding between title and subtitle
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Email: ${cartItem['userEmail']}',
-                            style: TextStyle(color: Colors.blueAccent),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                children: [
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Blood Group: ${cartItem['blood']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Date of Birth: ${cartItem['dob']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Order Number: ${cartItem['orderNumber']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 8.0),
-                        Divider(),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Price: ${cartItem['price']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Primary Contact: ${cartItem['primaryContact']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Emergency Contact 1: ${cartItem['emergencyContact1']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Emergency Contact 2: ${cartItem['emergencyContact2']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Pin Code: ${cartItem['pinCode']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Address: ${cartItem['address']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        SizedBox(height: 4.0),
-                        Text(
-                          'Order Date: ${cartItem['date']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
+              // return ExpansionTile(
+              //   leading: CircleAvatar(
+              //     radius: 30, // Adjust size for better proportion
+              //     backgroundImage: NetworkImage(cartItem['imageUrl']),
+              //     onBackgroundImageError: (exception, stackTrace) {
+              //       print('Error loading image: $exception');
+              //     },
+              //     child: Icon(
+              //       Icons.person,
+              //       size: 30, // Adjust icon size
+              //       color: Colors.white,
+              //     ), // Fallback icon when image fails
+              //   ),
+              //   shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(12),
+              //       side: BorderSide(color: AppColors.whiteColor)),
+              //   title: Padding(
+              //     padding: EdgeInsets.all(16.0), // Padding inside the card
+              //     child: ListTile(
+              //       contentPadding:
+              //           EdgeInsets.zero, // Remove default padding from ListTile
+              //       title: Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             "${cartItem['name']}",
+              //             style: TextStyle(
+              //               fontWeight: FontWeight.bold,
+              //               fontSize: 16.0, // Larger font for the name
+              //             ),
+              //           ),
+              //           CircleAvatar(
+              //             radius: 16,
+              //             backgroundColor: Colors.blueAccent,
+              //             child: Text(
+              //               "$index",
+              //               style: TextStyle(
+              //                 color: Colors.white,
+              //                 fontSize: 12.0,
+              //                 fontWeight: FontWeight.bold,
+              //               ),
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //       subtitle: Padding(
+              //         padding: EdgeInsets.only(
+              //             top: 8.0), // Padding between title and subtitle
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Text(
+              //               'Email: ${cartItem['userEmail']}',
+              //               style: TextStyle(color: Colors.blueAccent),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              //   children: [
+              //     Padding(
+              //       padding:
+              //           EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           Text(
+              //             'Blood Group: ${cartItem['blood']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Date of Birth: ${cartItem['dob']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Order Number: ${cartItem['orderNumber']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 8.0),
+              //           Divider(),
+              //           SizedBox(height: 8.0),
+              //           Text(
+              //             'Price: ${cartItem['price']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Primary Contact: ${cartItem['primaryContact']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Emergency Contact 1: ${cartItem['emergencyContact1']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Emergency Contact 2: ${cartItem['emergencyContact2']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Pin Code: ${cartItem['pinCode']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Address: ${cartItem['address']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //           SizedBox(height: 4.0),
+              //           Text(
+              //             'Order Date: ${cartItem['date']}',
+              //             style: TextStyle(color: Colors.grey[600]),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ],
+              // );
 
               // return Card(
               //   margin: EdgeInsets.all(8.0),

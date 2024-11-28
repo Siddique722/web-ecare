@@ -50,9 +50,11 @@ class _AddAmbulanceViewState extends State<AddAmbulanceView> {
         'nameofambulanceservice': nameofambulanceservice.text,
         'id': id,
         'createdAt':
-            FieldValue.serverTimestamp(), // To store when it was created
+        FieldValue.serverTimestamp(), // To store when it was created
       };
-
+      await FirebaseFirestore.instance.collection('ambulances').doc(userId).set({
+        'id':userId,
+      });
       // Save data under 'ambulances' -> userId -> 'userambulance' subcollection
       await FirebaseFirestore.instance
           .collection('ambulances')
@@ -79,6 +81,7 @@ class _AddAmbulanceViewState extends State<AddAmbulanceView> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Ambulance registered successfully!'),
       ));
+
     } catch (e) {
       setState(() {
         errorMessage = "Failed to register ambulance: $e";

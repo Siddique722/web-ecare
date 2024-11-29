@@ -210,6 +210,7 @@ class _AmbulanceViewState extends State<AmbulanceView> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text('District: ${ambulance['district']}'),
                                 Text('City: ${ambulance['city']}'),
                                 Text(
                                     'Ambulance Reg. No: ${ambulance['ambulanceRegistrationNumber']}'),

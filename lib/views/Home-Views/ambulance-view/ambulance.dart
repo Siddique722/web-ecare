@@ -206,7 +206,7 @@ class _AmbulanceViewState extends State<AmbulanceView> {
 
                         return Card(
                           child: ListTile(
-                            title: Text('District: ${ambulance['district']}'),
+                            title: Text('Service Type: ${ambulance['nameofambulanceservice']}'),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

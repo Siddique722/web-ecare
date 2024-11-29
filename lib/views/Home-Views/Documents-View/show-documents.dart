@@ -354,6 +354,98 @@ class _ShowDocumentsState extends State<ShowDocuments> {
   XFile? _selectedFile;
   bool _isLoading = false;
   String _fileType = ''; // To store the type of the file selected
+  // Future<void> _submitData() async {
+  //   if (_selectedFile == null || _nameController.text.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Please fill all the fields and upload a file.'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //     return;
+  //   }
+  //
+  //   setState(() {
+  //     _isLoading = true; // Start loading
+  //   });
+  //
+  //   Navigator.pop(context); // Close the bottom sheet
+  //
+  //   try {
+  //     String fileUrl = '';
+  //     final file = File(_selectedFile!.path);
+  //     final fileName = '${DateTime.now().millisecondsSinceEpoch}.${_fileType}';
+  //     final storageRef = FirebaseStorage.instance
+  //         .ref()
+  //         .child('folderData/${widget.userID}/$fileName');
+  //
+  //     print('Uploading file to ${storageRef.fullPath}');
+  //
+  //     final uploadTask = storageRef.putFile(file);
+  //
+  //     // Monitor upload progress
+  //     uploadTask.snapshotEvents.listen((event) {
+  //       print('Upload task event: ${event.state}');
+  //       print('Progress: ${event.bytesTransferred}/${event.totalBytes}');
+  //     }).onError((error) {
+  //       print('Upload task error: $error');
+  //     });
+  //
+  //     await uploadTask.whenComplete(() async {
+  //       fileUrl = await storageRef.getDownloadURL();
+  //       print('File uploaded successfully. File URL: $fileUrl');
+  //     });
+  //
+  //     // Get the current date in the format yyyy-MM-dd
+  //     final currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  //
+  //     final snapshot = await FirebaseFirestore.instance
+  //         .collection('folderData')
+  //         .where('userId', isEqualTo: widget.userID)
+  //         .get();
+  //
+  //     if (snapshot.docs.isNotEmpty) {
+  //       final folderDoc = snapshot.docs.first;
+  //
+  //       await folderDoc.reference.collection(widget.document).add({
+  //         'name': _nameController.text,
+  //         'description': _dobController.text,
+  //         'file': fileUrl,
+  //         'fileType': _fileType,
+  //         'documentType': widget.document,
+  //         'userId': widget.userID,
+  //         'dateAdded': currentDate, // Store the current date here
+  //       });
+  //
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Document added successfully!'),
+  //           backgroundColor: Colors.green,
+  //         ),
+  //       );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('No matching user ID found.'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Error uploading file: $e'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //     print('Error uploading file: $e'); // Print the error for debugging
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false; // Stop loading after submission
+  //     });
+  //   }
+  // }
+
   Future<void> _submitData() async {
     if (_selectedFile == null || _nameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -373,7 +465,6 @@ class _ShowDocumentsState extends State<ShowDocuments> {
 
     try {
       String fileUrl = '';
-      final file = File(_selectedFile!.path);
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.${_fileType}';
       final storageRef = FirebaseStorage.instance
           .ref()
@@ -381,7 +472,14 @@ class _ShowDocumentsState extends State<ShowDocuments> {
 
       print('Uploading file to ${storageRef.fullPath}');
 
-      final uploadTask = storageRef.putFile(file);
+      // Convert XFile to Uint8List
+      final Uint8List fileBytes = await _selectedFile!.readAsBytes();
+
+      // Upload file using putData
+      final uploadTask = storageRef.putData(
+        fileBytes,
+        SettableMetadata(contentType: 'application/octet-stream'), // Set MIME type
+      );
 
       // Monitor upload progress
       uploadTask.snapshotEvents.listen((event) {

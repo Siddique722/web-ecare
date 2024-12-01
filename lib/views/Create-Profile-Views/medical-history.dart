@@ -783,6 +783,7 @@
 //     }
 //   }
 // }
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -916,94 +917,61 @@ class _MedicalHistoryState extends State<MedicalHistory> {
       ),
     );
   }
-
-  // Future<void> uploadProfileImageAndSaveData() async {
-  //   try {
-  //     setState(() {
-  //       isLoading = true;
-  //     });
-  //
-  //     // Check if profileImage exists and is a valid string
-  //     if (widget.userProfileData!['profileImage'] != null &&
-  //         widget.userProfileData!['profileImage'].isNotEmpty &&
-  //         widget.userProfileData!['profileImage'] is String) {
-  //       // Convert the image path to a File object
-  //       File imageFile = File(widget.userProfileData!['profileImage']);
-  //
-  //       // Get the file name
-  //       String fileName = path.basename(imageFile.path);
-  //
-  //       // Upload the file to Firebase Storage
-  //       UploadTask uploadTask = FirebaseStorage.instance
-  //           .ref('profileImages/$fileName')
-  //           .putFile(imageFile);
-  //
-  //       // Get the download URL
-  //       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
-  //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-  //
-  //       // Update the userProfileData with the download URL
-  //       widget.userProfileData!['profileImage'] = downloadUrl;
-  //     } else {
-  //       // If no image is received, store an empty value
-  //       widget.userProfileData!['profileImage'] = '';
-  //     }
-  //
-  //     // Collect data into maps
-  //     medicalHistoryData['history1'] = medicalHistoryController1.text ?? '';
-  //     medicalHistoryData['history2'] = medicalHistoryController2.text ?? '';
-  //     medicalHistoryData['userId'] = widget.userID;
-  //     surgicalHistoryData['surgery1'] = surgicalHistoryController1.text ?? '';
-  //     surgicalHistoryData['surgery2'] = surgicalHistoryController2.text ?? '';
-  //     surgicalHistoryData['userID'] = widget.userID;
-  //
-  //     // Save data to Firestore based on role
-  //     if (widget.role == 'register') {
-  //       await createUserProfile();
-  //     } else if (widget.role == 'family') {
-  //       await createFamilyProfile();
-  //     }
-  //   } catch (e) {
-  //     print('Error uploading profile image: $e');
-  //   } finally {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
-/// for web , user account creation peffect but not work for updating
   Future<void> uploadProfileImageAndSaveData() async {
     try {
       setState(() {
         isLoading = true;
       });
+      if (widget.userProfileData!['profileImage'] != null &&
+          widget.userProfileData!['profileImage'].isNotEmpty &&
+          widget.userProfileData!['profileImage'] is String) {
+        // Convert the image path to a File object
+        File imageFile = File(widget.userProfileData!['profileImage']);
+        Uint8List fileBytes = base64Decode(widget.userProfileData!['profileImage']);
+        // Get the file name
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
 
-      String? downloadUrl = '';
-
-      // Select a file using FilePicker
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowMultiple: false,
-      );
-
-      if (result != null) {
-        Uint8List? fileBytes = result.files.first.bytes;
-        String fileName = result.files.first.name;
-
-        // Upload file to Firebase Storage
+        // Upload the file to Firebase Storage
         UploadTask uploadTask = FirebaseStorage.instance
             .ref('profileImages/$fileName')
-            .putData(fileBytes!);
+            .putData(fileBytes);
 
-        TaskSnapshot taskSnapshot = await uploadTask;
-        downloadUrl = await taskSnapshot.ref.getDownloadURL();
+        // Get the download URL
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
         // Update the userProfileData with the download URL
         widget.userProfileData!['profileImage'] = downloadUrl;
       } else {
-        // If no image is selected, store an empty value
+        // If no image is received, store an empty value
         widget.userProfileData!['profileImage'] = '';
       }
+      // String? downloadUrl = '';
+      //
+      // // Select a file using FilePicker
+      // FilePickerResult? result = await FilePicker.platform.pickFiles(
+      //   type: FileType.image,
+      //   allowMultiple: false,
+      // );
+      //
+      // if (result != null) {
+      //   Uint8List? fileBytes = result.files.first.bytes;
+      //   String fileName = result.files.first.name;
+      //
+      //   // Upload file to Firebase Storage
+      //   UploadTask uploadTask = FirebaseStorage.instance
+      //       .ref('profileImages/$fileName')
+      //       .putData(fileBytes!);
+      //
+      //   TaskSnapshot taskSnapshot = await uploadTask;
+      //   downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      //
+      //   // Update the userProfileData with the download URL
+      //   widget.userProfileData!['profileImage'] = downloadUrl;
+      // } else {
+      //   // If no image is selected, store an empty value
+      //   widget.userProfileData!['profileImage'] = '';
+      // }
 
       // Collect data into maps
       medicalHistoryData['history1'] = medicalHistoryController1.text;
@@ -1028,72 +996,6 @@ class _MedicalHistoryState extends State<MedicalHistory> {
     }
   }
 
-
-  ///- glitch code
-  // Future<void> uploadProfileImageAndSaveData() async {
-  //   try {
-  //     setState(() {
-  //       isLoading = true;
-  //     });
-  //
-  //     String? downloadUrl = '';
-  //
-  //     // Check platform: use `html.FileUploadInputElement` for web
-  //     final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-  //     uploadInput.accept = 'image/*'; // Allow image files only
-  //     uploadInput.click(); // Trigger the file picker
-  //
-  //     await uploadInput.onChange.first;
-  //
-  //     if (uploadInput.files!.isNotEmpty) {
-  //       // Get the selected file
-  //       final html.File file = uploadInput.files!.first;
-  //       final reader = html.FileReader();
-  //       reader.readAsArrayBuffer(file);
-  //
-  //       await reader.onLoad.first;
-  //       Uint8List fileBytes = reader.result as Uint8List;
-  //
-  //       // Get file name
-  //       String fileName = file.name;
-  //
-  //       // Upload file to Firebase Storage
-  //       UploadTask uploadTask = FirebaseStorage.instance
-  //           .ref('profileImages/$fileName')
-  //           .putData(fileBytes);
-  //
-  //       TaskSnapshot taskSnapshot = await uploadTask;
-  //       downloadUrl = await taskSnapshot.ref.getDownloadURL();
-  //
-  //       // Update the userProfileData with the download URL
-  //       widget.userProfileData!['profileImage'] = downloadUrl;
-  //     } else {
-  //       // No file selected, set profileImage to an empty string
-  //       widget.userProfileData!['profileImage'] = '';
-  //     }
-  //
-  //     // Collect data into maps
-  //     medicalHistoryData['history1'] = medicalHistoryController1.text;
-  //     medicalHistoryData['history2'] = medicalHistoryController2.text;
-  //     medicalHistoryData['userId'] = widget.userID;
-  //     surgicalHistoryData['surgery1'] = surgicalHistoryController1.text;
-  //     surgicalHistoryData['surgery2'] = surgicalHistoryController2.text;
-  //     surgicalHistoryData['userID'] = widget.userID;
-  //
-  //     // Save data to Firestore
-  //     if (widget.role == 'register') {
-  //       await createUserProfile();
-  //     } else if (widget.role == 'family') {
-  //       await createFamilyProfile();
-  //     }
-  //   } catch (e) {
-  //     print('Error uploading profile image: $e');
-  //   } finally {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
 
 
   Future<void> createFamilyProfile() async {

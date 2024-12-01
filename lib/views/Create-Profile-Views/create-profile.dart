@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecare/views/Create-Profile-Views/combrobities.dart';
 import 'package:ecare/widgets/date-field.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -332,8 +334,6 @@ class CreateProfileScreen extends StatefulWidget {
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final ImagePicker _picker = ImagePicker();
-  XFile? _image;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController primaryContactController =
@@ -356,14 +356,35 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     userID = userData!.uid;
     useremail = userData!.email!;
   }
-
+  final ImagePicker _picker = ImagePicker();
+  XFile? _image;
   Map<String, dynamic> userProfileData = {};
+  // Future<void> _pickImage() async {
+  //   final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  //   // FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //   //   type: FileType.image,
+  //   //   allowMultiple: false,
+  //   // );
+  //   if (pickedFile != null) {
+  //     setState(() {
+  //       _image = pickedFile;
+  //    //   _image=result
+  //     });
+  //   }
+  // }
+  String ImagePath='';
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _image = pickedFile;
-      });
+
+        // For web, convert the file to Base64
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _image = pickedFile;
+        //  userProfileData['profileImage']
+          ImagePath= base64Encode(bytes); // Save Base64
+        });
+
     }
   }
 
@@ -430,7 +451,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       userProfileData['dateOfBirth'] =
           dateController.text.isNotEmpty ? dateController.text : '';
       userProfileData['profileImage'] =
-          _image?.path ?? ''; // Store empty if no image is selected
+          //_image?.path
+            ImagePath  ?? ''; // Store empty if no image is selected
       userProfileData['userId'] = userID;
       userProfileData['email'] =
           useremail; // Adding the user email to the data map for reference
@@ -494,43 +516,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 BoldTextWidgetTheme(text: 'Create Profile'),
                 SizedBox(height: 20.0),
                 _buildProfileImage(),
-                // GestureDetector(
-                //   onTap: _pickImage,
-                //   child: Container(
-                //     width: 100.0,
-                //     height: 100.0,
-                //     decoration: BoxDecoration(
-                //       color: Theme.of(context).secondaryHeaderColor,
-                //       shape: BoxShape.circle,
-                //     ),
-                //     child: Stack(
-                //       fit: StackFit.expand,
-                //       children: [
-                //         if (_image != null)
-                //           ClipOval(
-                //             child: Image.file(
-                //               File(_image!.path),
-                //               fit: BoxFit.cover,
-                //             ),
-                //           )
-                //         else
-                //           Icon(
-                //             Icons.camera_alt,
-                //             color: Theme.of(context).primaryIconTheme.color,
-                //             size: 40.0,
-                //           ),
-                //         Align(
-                //           alignment: Alignment.bottomRight,
-                //           child: IconButton(
-                //             icon: Icon(Icons.add_a_photo),
-                //             onPressed: _pickImage,
-                //             color: Theme.of(context).primaryColor,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
                 SizedBox(height: 20.0),
                 LightDarktextField(
                   keyboardType: TextInputType.text,
@@ -649,7 +634,40 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       ),
     );
   }
-  Widget _buildProfileImage() {
+  // Widget _buildProfileImage() {
+  //   return GestureDetector(
+  //     onTap: _pickImage,
+  //     child: Container(
+  //       width: 100.0,
+  //       height: 100.0,
+  //       decoration: BoxDecoration(
+  //         color: Theme.of(context).secondaryHeaderColor,
+  //         shape: BoxShape.circle,
+  //       ),
+  //       child: _image != null
+  //           ? (kIsWeb
+  //           ? ClipOval(
+  //         child: Image.memory(
+  //           base64Decode(userProfileData['profileImage'] ?? ''),
+  //           fit: BoxFit.cover,
+  //         ),
+  //       )
+  //           : ClipOval(
+  //         child: Image.file(
+  //           File(_image!.path),
+  //           fit: BoxFit.cover,
+  //         ),
+  //       ))
+  //           : Icon(
+  //         Icons.camera_alt,
+  //         color: Theme.of(context).primaryIconTheme.color,
+  //         size: 40.0,
+  //       ),
+  //     ),
+  //   );
+  // }
+
+Widget _buildProfileImage() {
     return GestureDetector(
       onTap: _pickImage,
       child: Container(

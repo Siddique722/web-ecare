@@ -34,7 +34,7 @@ export 'package:ecare/views/auth-views/wraper-screen.dart';
 export 'package:ecare/views/auth-views/Reset-Password/otp.dart';
 export 'package:ecare/views/Create-Profile-Views/ongoing-medication.dart';
 export 'package:ecare/widgets/theme-text-field.dart';
-export 'package:ecare/views/Create-Profile-Views/alergic-medication.dart';
+export 'package:ecare/views/Create-Profile-Views/alergic0medications/alergic-medication.dart';
 export 'package:ecare/widgets/the-drop-down.dart';
 export 'package:ecare/views/Create-Profile-Views/medical-history.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';

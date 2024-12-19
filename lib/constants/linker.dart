@@ -36,7 +36,7 @@ export 'package:ecare/views/Create-Profile-Views/ongoing-medication.dart';
 export 'package:ecare/widgets/theme-text-field.dart';
 export 'package:ecare/views/Create-Profile-Views/alergic0medications/alergic-medication.dart';
 export 'package:ecare/widgets/the-drop-down.dart';
-export 'package:ecare/views/Create-Profile-Views/medical-history.dart';
+export 'package:ecare/views/Create-Profile-Views/medical-history/medical-history.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'package:ecare/views/Home-Views/Catrs/add-cart.dart';

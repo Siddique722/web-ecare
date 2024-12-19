@@ -819,13 +819,13 @@ class MedicalHistory extends StatefulWidget {
 
 class _MedicalHistoryState extends State<MedicalHistory> {
   final TextEditingController medicalHistoryController1 =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController medicalHistoryController2 =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController surgicalHistoryController1 =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController surgicalHistoryController2 =
-  TextEditingController();
+      TextEditingController();
 
   Map<String, dynamic> medicalHistoryData = {};
   Map<String, dynamic> surgicalHistoryData = {};
@@ -872,7 +872,7 @@ class _MedicalHistoryState extends State<MedicalHistory> {
               BoldTextWidgetTheme(text: 'Other Medical History'),
               SimpleTextWidgetTheme(
                 text:
-                'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
+                    'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
               ),
               LightDarktextField(
                 controller: medicalHistoryController1,
@@ -888,7 +888,7 @@ class _MedicalHistoryState extends State<MedicalHistory> {
               BoldTextWidgetTheme(text: 'Other Surgical History'),
               SimpleTextWidgetTheme(
                 text:
-                'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
+                    'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
               ),
               LightDarktextField(
                 controller: surgicalHistoryController1,
@@ -903,21 +903,20 @@ class _MedicalHistoryState extends State<MedicalHistory> {
               isLoading
                   ? AppLoading()
                   : InkWell(
-                onTap: () async {
-                  // Upload profile image and save data
-                  await uploadProfileImageAndSaveData();
-                },
-                child: BlueButton(
-                  text: 'Update',
-                ),
-              ),
+                      onTap: () async {
+                        // Upload profile image and save data
+                        await uploadProfileImageAndSaveData();
+                      },
+                      child: BlueButton(
+                        text: 'Update',
+                      ),
+                    ),
             ],
           ),
         ),
       ),
     );
   }
-
 
   Future<void> uploadProfileImageAndSaveData() async {
     try {
@@ -930,7 +929,8 @@ class _MedicalHistoryState extends State<MedicalHistory> {
           widget.userProfileData!['profileImage'].isNotEmpty &&
           widget.userProfileData!['profileImage'] is String) {
         // Convert base64 string to Uint8List (only for web-compatible input)
-        Uint8List fileBytes = base64Decode(widget.userProfileData!['profileImage']);
+        Uint8List fileBytes =
+            base64Decode(widget.userProfileData!['profileImage']);
         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
 
         // Upload the file to Firebase Storage using putData (Firebase Web API)
@@ -1052,12 +1052,11 @@ class _MedicalHistoryState extends State<MedicalHistory> {
   // }
   //
 
-
   Future<void> createFamilyProfile() async {
     try {
       // Generate a random 9-digit number for userfamilyId
       String userfamilyId =
-      (Random().nextInt(900000000) + 100000000).toString();
+          (Random().nextInt(900000000) + 100000000).toString();
 
       // Add userfamilyId to each map
       widget.userProfileData!['userfamilyId'] = userfamilyId;

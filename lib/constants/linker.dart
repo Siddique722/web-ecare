@@ -32,7 +32,7 @@ export 'package:ecare/Services/auth-services.dart';
 export 'package:ecare/views/auth-views/Verification-email/edit-email.dart';
 export 'package:ecare/views/auth-views/wraper-screen.dart';
 export 'package:ecare/views/auth-views/Reset-Password/otp.dart';
-export 'package:ecare/views/Create-Profile-Views/ongoing-medication.dart';
+export 'package:ecare/views/Create-Profile-Views/on-going/ongoing-medication.dart';
 export 'package:ecare/widgets/theme-text-field.dart';
 export 'package:ecare/views/Create-Profile-Views/alergic0medications/alergic-medication.dart';
 export 'package:ecare/widgets/the-drop-down.dart';

@@ -334,7 +334,6 @@ class CreateProfileScreen extends StatefulWidget {
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController primaryContactController =
       TextEditingController();
@@ -356,47 +355,31 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     userID = userData!.uid;
     useremail = userData!.email!;
   }
+
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
   Map<String, dynamic> userProfileData = {};
-  // Future<void> _pickImage() async {
-  //   final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-  //   // FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //   //   type: FileType.image,
-  //   //   allowMultiple: false,
-  //   // );
-  //   if (pickedFile != null) {
-  //     setState(() {
-  //       _image = pickedFile;
-  //    //   _image=result
-  //     });
-  //   }
-  // }
-  String ImagePath='';
-  Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
 
-        // For web, convert the file to Base64
+  String imagePath = ''; // To store Base64 string
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile =
+          await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        // Convert the file to Base64
         final bytes = await pickedFile.readAsBytes();
         setState(() {
           _image = pickedFile;
-        //  userProfileData['profileImage']
-          ImagePath= base64Encode(bytes); // Save Base64
+          imagePath = base64Encode(bytes); // Save as Base64 string
         });
-
+        print('Image successfully selected and converted to Base64.');
+      } else {
+        print('No image selected');
+      }
+    } catch (e) {
+      print('Error picking image: $e');
     }
   }
-
-  // Future<void> _pickImage() async {
-  //   final XFile? pickedFile =
-  //       await _picker.pickImage(source: ImageSource.gallery);
-  //   if (pickedFile != null) {
-  //     setState(() {
-  //       _image = pickedFile;
-  //     });
-  //   }
-  // }
 
   @override
   void initState() {
@@ -452,7 +435,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           dateController.text.isNotEmpty ? dateController.text : '';
       userProfileData['profileImage'] =
           //_image?.path
-            ImagePath  ?? ''; // Store empty if no image is selected
+          imagePath ?? ''; // Store empty if no image is selected
       userProfileData['userId'] = userID;
       userProfileData['email'] =
           useremail; // Adding the user email to the data map for reference
@@ -634,40 +617,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       ),
     );
   }
-  // Widget _buildProfileImage() {
-  //   return GestureDetector(
-  //     onTap: _pickImage,
-  //     child: Container(
-  //       width: 100.0,
-  //       height: 100.0,
-  //       decoration: BoxDecoration(
-  //         color: Theme.of(context).secondaryHeaderColor,
-  //         shape: BoxShape.circle,
-  //       ),
-  //       child: _image != null
-  //           ? (kIsWeb
-  //           ? ClipOval(
-  //         child: Image.memory(
-  //           base64Decode(userProfileData['profileImage'] ?? ''),
-  //           fit: BoxFit.cover,
-  //         ),
-  //       )
-  //           : ClipOval(
-  //         child: Image.file(
-  //           File(_image!.path),
-  //           fit: BoxFit.cover,
-  //         ),
-  //       ))
-  //           : Icon(
-  //         Icons.camera_alt,
-  //         color: Theme.of(context).primaryIconTheme.color,
-  //         size: 40.0,
-  //       ),
-  //     ),
-  //   );
-  // }
 
-Widget _buildProfileImage() {
+  Widget _buildProfileImage() {
     return GestureDetector(
       onTap: _pickImage,
       child: Container(
@@ -679,25 +630,24 @@ Widget _buildProfileImage() {
         ),
         child: _image != null
             ? (kIsWeb
-            ? ClipOval(
-          child: Image.network(
-            _image!.path, // Use the path as URL for web
-            fit: BoxFit.cover,
-          ),
-        )
-            : ClipOval(
-          child: Image.file(
-            File(_image!.path), // Use the file for mobile
-            fit: BoxFit.cover,
-          ),
-        ))
+                ? ClipOval(
+                    child: Image.network(
+                      _image!.path, // Use the path as URL for web
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : ClipOval(
+                    child: Image.file(
+                      File(_image!.path), // Use the file for mobile
+                      fit: BoxFit.cover,
+                    ),
+                  ))
             : Icon(
-          Icons.camera_alt,
-          color: Theme.of(context).primaryIconTheme.color,
-          size: 40.0,
-        ),
+                Icons.camera_alt,
+                color: Theme.of(context).primaryIconTheme.color,
+                size: 40.0,
+              ),
       ),
     );
   }
-
 }

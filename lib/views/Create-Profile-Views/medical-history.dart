@@ -917,26 +917,28 @@ class _MedicalHistoryState extends State<MedicalHistory> {
       ),
     );
   }
+
+
   Future<void> uploadProfileImageAndSaveData() async {
     try {
       setState(() {
         isLoading = true;
       });
+
+      // Check if profile image exists in userProfileData
       if (widget.userProfileData!['profileImage'] != null &&
           widget.userProfileData!['profileImage'].isNotEmpty &&
           widget.userProfileData!['profileImage'] is String) {
-        // Convert the image path to a File object
-        File imageFile = File(widget.userProfileData!['profileImage']);
+        // Convert base64 string to Uint8List (only for web-compatible input)
         Uint8List fileBytes = base64Decode(widget.userProfileData!['profileImage']);
-        // Get the file name
         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
 
-        // Upload the file to Firebase Storage
+        // Upload the file to Firebase Storage using putData (Firebase Web API)
         UploadTask uploadTask = FirebaseStorage.instance
             .ref('profileImages/$fileName')
             .putData(fileBytes);
 
-        // Get the download URL
+        // Get the download URL after upload
         TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
@@ -946,32 +948,6 @@ class _MedicalHistoryState extends State<MedicalHistory> {
         // If no image is received, store an empty value
         widget.userProfileData!['profileImage'] = '';
       }
-      // String? downloadUrl = '';
-      //
-      // // Select a file using FilePicker
-      // FilePickerResult? result = await FilePicker.platform.pickFiles(
-      //   type: FileType.image,
-      //   allowMultiple: false,
-      // );
-      //
-      // if (result != null) {
-      //   Uint8List? fileBytes = result.files.first.bytes;
-      //   String fileName = result.files.first.name;
-      //
-      //   // Upload file to Firebase Storage
-      //   UploadTask uploadTask = FirebaseStorage.instance
-      //       .ref('profileImages/$fileName')
-      //       .putData(fileBytes!);
-      //
-      //   TaskSnapshot taskSnapshot = await uploadTask;
-      //   downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      //
-      //   // Update the userProfileData with the download URL
-      //   widget.userProfileData!['profileImage'] = downloadUrl;
-      // } else {
-      //   // If no image is selected, store an empty value
-      //   widget.userProfileData!['profileImage'] = '';
-      // }
 
       // Collect data into maps
       medicalHistoryData['history1'] = medicalHistoryController1.text;
@@ -996,6 +972,85 @@ class _MedicalHistoryState extends State<MedicalHistory> {
     }
   }
 
+  // Future<void> uploadProfileImageAndSaveData() async {
+  //   try {
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+  //     if (widget.userProfileData!['profileImage'] != null &&
+  //         widget.userProfileData!['profileImage'].isNotEmpty &&
+  //         widget.userProfileData!['profileImage'] is String) {
+  //       // Convert the image path to a File object
+  //       File imageFile = File(widget.userProfileData!['profileImage']);
+  //       Uint8List fileBytes = base64Decode(widget.userProfileData!['profileImage']);
+  //       // Get the file name
+  //       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+  //
+  //       // Upload the file to Firebase Storage
+  //       UploadTask uploadTask = FirebaseStorage.instance
+  //           .ref('profileImages/$fileName')
+  //           .putData(fileBytes);
+  //
+  //       // Get the download URL
+  //       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+  //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  //
+  //       // Update the userProfileData with the download URL
+  //       widget.userProfileData!['profileImage'] = downloadUrl;
+  //     } else {
+  //       // If no image is received, store an empty value
+  //       widget.userProfileData!['profileImage'] = '';
+  //     }
+  //     // String? downloadUrl = '';
+  //     //
+  //     // // Select a file using FilePicker
+  //     // FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     //   type: FileType.image,
+  //     //   allowMultiple: false,
+  //     // );
+  //     //
+  //     // if (result != null) {
+  //     //   Uint8List? fileBytes = result.files.first.bytes;
+  //     //   String fileName = result.files.first.name;
+  //     //
+  //     //   // Upload file to Firebase Storage
+  //     //   UploadTask uploadTask = FirebaseStorage.instance
+  //     //       .ref('profileImages/$fileName')
+  //     //       .putData(fileBytes!);
+  //     //
+  //     //   TaskSnapshot taskSnapshot = await uploadTask;
+  //     //   downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  //     //
+  //     //   // Update the userProfileData with the download URL
+  //     //   widget.userProfileData!['profileImage'] = downloadUrl;
+  //     // } else {
+  //     //   // If no image is selected, store an empty value
+  //     //   widget.userProfileData!['profileImage'] = '';
+  //     // }
+  //
+  //     // Collect data into maps
+  //     medicalHistoryData['history1'] = medicalHistoryController1.text;
+  //     medicalHistoryData['history2'] = medicalHistoryController2.text;
+  //     medicalHistoryData['userId'] = widget.userID;
+  //     surgicalHistoryData['surgery1'] = surgicalHistoryController1.text;
+  //     surgicalHistoryData['surgery2'] = surgicalHistoryController2.text;
+  //     surgicalHistoryData['userID'] = widget.userID;
+  //
+  //     // Save data to Firestore
+  //     if (widget.role == 'register') {
+  //       await createUserProfile();
+  //     } else if (widget.role == 'family') {
+  //       await createFamilyProfile();
+  //     }
+  //   } catch (e) {
+  //     print('Error uploading profile image: $e');
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+  //
 
 
   Future<void> createFamilyProfile() async {

@@ -800,123 +800,7 @@ import 'package:get/get.dart';
 
 import 'medical-history-controller.dart';
 
-class MedicalHistory extends StatelessWidget {
-  final String? userID;
-  final String? role;
-  final Map<String, dynamic>? userProfileData;
-  final Map<String, dynamic>? comorbiditiesData;
-  final Map<String, dynamic>? allergicMedicationsData;
-  final Map<String, dynamic>? currentMedicationsData;
-
-  MedicalHistory({
-    this.userProfileData,
-    this.role,
-    this.comorbiditiesData,
-    this.allergicMedicationsData,
-    this.currentMedicationsData,
-    this.userID,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final controller =
-        Get.put(MedicalHistoryController()); // Bind the controller
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: BoldTextWidgetTheme(text: 'Create Profile'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              // Handle skipping profile creation
-              if (role == 'register') {
-                controller.createUserProfile(
-                  userID!,
-                  userProfileData!,
-                  comorbiditiesData!,
-                  allergicMedicationsData!,
-                  currentMedicationsData!,
-                );
-              } else if (role == 'family') {
-                controller.createFamilyProfile(
-                  userID!,
-                  userProfileData!,
-                  comorbiditiesData!,
-                  allergicMedicationsData!,
-                  currentMedicationsData!,
-                );
-              }
-            },
-            child: Text(
-              'Skip',
-              style: TextStyle(color: Colors.blueAccent.shade700),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: Column(
-            children: [
-              BoldTextWidgetTheme(text: 'Other Medical History'),
-              SimpleTextWidgetTheme(
-                text:
-                    'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
-              ),
-              LightDarktextField(
-                controller: controller.medicalHistoryController1,
-                hintText: 'Medical History',
-                keyboardType: TextInputType.text,
-              ),
-              LightDarktextField(
-                controller: controller.medicalHistoryController2,
-                hintText: 'Medical History',
-                keyboardType: TextInputType.text,
-              ),
-              SizedBox(height: 20.0),
-              BoldTextWidgetTheme(text: 'Other Surgical History'),
-              SimpleTextWidgetTheme(
-                text:
-                    'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
-              ),
-              LightDarktextField(
-                controller: controller.surgicalHistoryController1,
-                hintText: 'Surgical History',
-                keyboardType: TextInputType.text,
-              ),
-              LightDarktextField(
-                controller: controller.surgicalHistoryController2,
-                hintText: 'Surgical History',
-                keyboardType: TextInputType.text,
-              ),
-              SizedBox(height: 20.0),
-              Obx(() => controller.isLoading.value
-                  ? CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: () async {
-                        await controller.uploadProfileImageAndSaveData(
-                          userID!,
-                          userProfileData!,
-                          role!,
-                          null,
-                          controller.createUserProfile,
-                          controller.createFamilyProfile,
-                        );
-                      },
-                      child: Text('Save Profile'),
-                    )),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-///---fully worked web code
-// class MedicalHistory extends StatefulWidget {
+// class MedicalHistory extends StatelessWidget {
 //   final String? userID;
 //   final String? role;
 //   final Map<String, dynamic>? userProfileData;
@@ -934,35 +818,10 @@ class MedicalHistory extends StatelessWidget {
 //   });
 
 //   @override
-//   State<MedicalHistory> createState() => _MedicalHistoryState();
-// }
-
-// class _MedicalHistoryState extends State<MedicalHistory> {
-//   final TextEditingController medicalHistoryController1 =
-//       TextEditingController();
-//   final TextEditingController medicalHistoryController2 =
-//       TextEditingController();
-//   final TextEditingController surgicalHistoryController1 =
-//       TextEditingController();
-//   final TextEditingController surgicalHistoryController2 =
-//       TextEditingController();
-
-//   Map<String, dynamic> medicalHistoryData = {};
-//   Map<String, dynamic> surgicalHistoryData = {};
-
-//   bool isLoading = false;
-
-//   @override
-//   void dispose() {
-//     medicalHistoryController1.dispose();
-//     medicalHistoryController2.dispose();
-//     surgicalHistoryController1.dispose();
-//     surgicalHistoryController2.dispose();
-//     super.dispose();
-//   }
-
-//   @override
 //   Widget build(BuildContext context) {
+//     final controller =
+//         Get.put(MedicalHistoryController()); // Bind the controller
+
 //     return Scaffold(
 //       appBar: AppBar(
 //         backgroundColor: Colors.transparent,
@@ -971,10 +830,22 @@ class MedicalHistory extends StatelessWidget {
 //           TextButton(
 //             onPressed: () async {
 //               // Handle skipping profile creation
-//               if (widget.role == 'register') {
-//                 createUserProfile();
-//               } else if (widget.role == 'family') {
-//                 createFamilyProfile();
+//               if (role == 'register') {
+//                 controller.createUserProfile(
+//                   userID!,
+//                   userProfileData!,
+//                   comorbiditiesData!,
+//                   allergicMedicationsData!,
+//                   currentMedicationsData!,
+//                 );
+//               } else if (role == 'family') {
+//                 controller.createFamilyProfile(
+//                   userID!,
+//                   userProfileData!,
+//                   comorbiditiesData!,
+//                   allergicMedicationsData!,
+//                   currentMedicationsData!,
+//                 );
 //               }
 //             },
 //             child: Text(
@@ -995,12 +866,12 @@ class MedicalHistory extends StatelessWidget {
 //                     'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
 //               ),
 //               LightDarktextField(
-//                 controller: medicalHistoryController1,
+//                 controller: controller.medicalHistoryController1,
 //                 hintText: 'Medical History',
 //                 keyboardType: TextInputType.text,
 //               ),
 //               LightDarktextField(
-//                 controller: medicalHistoryController2,
+//                 controller: controller.medicalHistoryController2,
 //                 hintText: 'Medical History',
 //                 keyboardType: TextInputType.text,
 //               ),
@@ -1011,282 +882,411 @@ class MedicalHistory extends StatelessWidget {
 //                     'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
 //               ),
 //               LightDarktextField(
-//                 controller: surgicalHistoryController1,
+//                 controller: controller.surgicalHistoryController1,
 //                 hintText: 'Surgical History',
 //                 keyboardType: TextInputType.text,
 //               ),
 //               LightDarktextField(
-//                 controller: surgicalHistoryController2,
+//                 controller: controller.surgicalHistoryController2,
 //                 hintText: 'Surgical History',
 //                 keyboardType: TextInputType.text,
 //               ),
-//               isLoading
-//                   ? AppLoading()
-//                   : InkWell(
-//                       onTap: () async {
-//                         // Upload profile image and save data
-//                         await uploadProfileImageAndSaveData();
+//               SizedBox(height: 20.0),
+//               Obx(() => controller.isLoading.value
+//                   ? CircularProgressIndicator()
+//                   : ElevatedButton(
+//                       onPressed: () async {
+//                         await controller.uploadProfileImageAndSaveData(
+//                           userID!,
+//                           userProfileData!,
+//                           role!,
+//                           null,
+//                           controller.createUserProfile,
+//                           controller.createFamilyProfile,
+//                         );
 //                       },
-//                       child: BlueButton(
-//                         text: 'Update',
-//                       ),
-//                     ),
+//                       child: Text('Save Profile'),
+//                     )),
 //             ],
 //           ),
 //         ),
 //       ),
 //     );
 //   }
-
-//   Future<void> uploadProfileImageAndSaveData() async {
-//     try {
-//       setState(() {
-//         isLoading = true;
-//       });
-
-//       // Check if profile image exists in userProfileData
-//       if (widget.userProfileData!['profileImage'] != null &&
-//           widget.userProfileData!['profileImage'].isNotEmpty &&
-//           widget.userProfileData!['profileImage'] is String) {
-//         // Convert base64 string to Uint8List (only for web-compatible input)
-//         Uint8List fileBytes =
-//             base64Decode(widget.userProfileData!['profileImage']);
-//         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-
-//         // Upload the file to Firebase Storage using putData (Firebase Web API)
-//         UploadTask uploadTask = FirebaseStorage.instance
-//             .ref('profileImages/$fileName')
-//             .putData(fileBytes);
-
-//         // Get the download URL after upload
-//         TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
-//         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-//         // Update the userProfileData with the download URL
-//         widget.userProfileData!['profileImage'] = downloadUrl;
-//       } else {
-//         // If no image is received, store an empty value
-//         widget.userProfileData!['profileImage'] = '';
-//       }
-
-//       // Collect data into maps
-//       medicalHistoryData['history1'] = medicalHistoryController1.text;
-//       medicalHistoryData['history2'] = medicalHistoryController2.text;
-//       medicalHistoryData['userId'] = widget.userID;
-//       surgicalHistoryData['surgery1'] = surgicalHistoryController1.text;
-//       surgicalHistoryData['surgery2'] = surgicalHistoryController2.text;
-//       surgicalHistoryData['userID'] = widget.userID;
-
-//       // Save data to Firestore
-//       if (widget.role == 'register') {
-//         await createUserProfile();
-//       } else if (widget.role == 'family') {
-//         await createFamilyProfile();
-//       }
-//     } catch (e) {
-//       print('Error uploading profile image: $e');
-//     } finally {
-//       setState(() {
-//         isLoading = false;
-//       });
-//     }
-//   }
-
-//   // Future<void> uploadProfileImageAndSaveData() async {
-//   //   try {
-//   //     setState(() {
-//   //       isLoading = true;
-//   //     });
-//   //     if (widget.userProfileData!['profileImage'] != null &&
-//   //         widget.userProfileData!['profileImage'].isNotEmpty &&
-//   //         widget.userProfileData!['profileImage'] is String) {
-//   //       // Convert the image path to a File object
-//   //       File imageFile = File(widget.userProfileData!['profileImage']);
-//   //       Uint8List fileBytes = base64Decode(widget.userProfileData!['profileImage']);
-//   //       // Get the file name
-//   //       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-//   //
-//   //       // Upload the file to Firebase Storage
-//   //       UploadTask uploadTask = FirebaseStorage.instance
-//   //           .ref('profileImages/$fileName')
-//   //           .putData(fileBytes);
-//   //
-//   //       // Get the download URL
-//   //       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
-//   //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-//   //
-//   //       // Update the userProfileData with the download URL
-//   //       widget.userProfileData!['profileImage'] = downloadUrl;
-//   //     } else {
-//   //       // If no image is received, store an empty value
-//   //       widget.userProfileData!['profileImage'] = '';
-//   //     }
-//   //     // String? downloadUrl = '';
-//   //     //
-//   //     // // Select a file using FilePicker
-//   //     // FilePickerResult? result = await FilePicker.platform.pickFiles(
-//   //     //   type: FileType.image,
-//   //     //   allowMultiple: false,
-//   //     // );
-//   //     //
-//   //     // if (result != null) {
-//   //     //   Uint8List? fileBytes = result.files.first.bytes;
-//   //     //   String fileName = result.files.first.name;
-//   //     //
-//   //     //   // Upload file to Firebase Storage
-//   //     //   UploadTask uploadTask = FirebaseStorage.instance
-//   //     //       .ref('profileImages/$fileName')
-//   //     //       .putData(fileBytes!);
-//   //     //
-//   //     //   TaskSnapshot taskSnapshot = await uploadTask;
-//   //     //   downloadUrl = await taskSnapshot.ref.getDownloadURL();
-//   //     //
-//   //     //   // Update the userProfileData with the download URL
-//   //     //   widget.userProfileData!['profileImage'] = downloadUrl;
-//   //     // } else {
-//   //     //   // If no image is selected, store an empty value
-//   //     //   widget.userProfileData!['profileImage'] = '';
-//   //     // }
-//   //
-//   //     // Collect data into maps
-//   //     medicalHistoryData['history1'] = medicalHistoryController1.text;
-//   //     medicalHistoryData['history2'] = medicalHistoryController2.text;
-//   //     medicalHistoryData['userId'] = widget.userID;
-//   //     surgicalHistoryData['surgery1'] = surgicalHistoryController1.text;
-//   //     surgicalHistoryData['surgery2'] = surgicalHistoryController2.text;
-//   //     surgicalHistoryData['userID'] = widget.userID;
-//   //
-//   //     // Save data to Firestore
-//   //     if (widget.role == 'register') {
-//   //       await createUserProfile();
-//   //     } else if (widget.role == 'family') {
-//   //       await createFamilyProfile();
-//   //     }
-//   //   } catch (e) {
-//   //     print('Error uploading profile image: $e');
-//   //   } finally {
-//   //     setState(() {
-//   //       isLoading = false;
-//   //     });
-//   //   }
-//   // }
-//   //
-
-//   Future<void> createFamilyProfile() async {
-//     try {
-//       // Generate a random 9-digit number for userfamilyId
-//       String userfamilyId =
-//           (Random().nextInt(900000000) + 100000000).toString();
-
-//       // Add userfamilyId to each map
-//       widget.userProfileData!['userfamilyId'] = userfamilyId;
-//       widget.comorbiditiesData!['userfamilyId'] = userfamilyId;
-//       widget.allergicMedicationsData!['userfamilyId'] = userfamilyId;
-//       widget.currentMedicationsData!['userfamilyId'] = userfamilyId;
-//       medicalHistoryData['userfamilyId'] = userfamilyId;
-//       surgicalHistoryData['userfamilyId'] = userfamilyId;
-
-//       await FirebaseFirestore.instance
-//           .collection('familyUser')
-//           .doc(widget.userID)
-//           .set({
-//         'docId': widget.userID, // Add docId field with userID value
-//       });
-
-//       await FirebaseFirestore.instance
-//           .collection('familyUser')
-//           .doc(widget.userID)
-//           .collection('userProfileData')
-//           .doc(userfamilyId)
-//           .set(widget.userProfileData!);
-
-//       await FirebaseFirestore.instance
-//           .collection('familyUser')
-//           .doc(widget.userID)
-//           .collection('comorbiditiesData')
-//           .doc(userfamilyId)
-//           .set(widget.comorbiditiesData!);
-
-//       await FirebaseFirestore.instance
-//           .collection('familyUser')
-//           .doc(widget.userID)
-//           .collection('allergicMedicationsData')
-//           .doc(userfamilyId)
-//           .set(widget.allergicMedicationsData!);
-
-//       await FirebaseFirestore.instance
-//           .collection('familyUser')
-//           .doc(widget.userID)
-//           .collection('currentMedicationsData')
-//           .doc(userfamilyId)
-//           .set(widget.currentMedicationsData!);
-
-//       await FirebaseFirestore.instance
-//           .collection('familyUser')
-//           .doc(widget.userID)
-//           .collection('medicalHistoryData')
-//           .doc(userfamilyId)
-//           .set(medicalHistoryData);
-
-//       await FirebaseFirestore.instance
-//           .collection('familyUser')
-//           .doc(widget.userID)
-//           .collection('surgicalHistoryData')
-//           .doc(userfamilyId)
-//           .set(surgicalHistoryData);
-
-//       // Navigate to NavBarExample
-//       Navigator.pushReplacement(
-//         context,
-//         CupertinoPageRoute(
-//           builder: (context) => NavBarExample(),
-//         ),
-//       );
-//     } catch (e) {
-//       print('Error creating family profile: $e');
-//     }
-//   }
-
-//   Future<void> createUserProfile() async {
-//     try {
-//       await FirebaseFirestore.instance
-//           .collection('userProfileData')
-//           .doc(widget.userID)
-//           .set(widget.userProfileData!);
-
-//       await FirebaseFirestore.instance
-//           .collection('comorbiditiesData')
-//           .doc(widget.userID)
-//           .set(widget.comorbiditiesData!);
-
-//       await FirebaseFirestore.instance
-//           .collection('allergicMedicationsData')
-//           .doc(widget.userID)
-//           .set(widget.allergicMedicationsData!);
-//       await FirebaseFirestore.instance
-//           .collection('currentMedicationsData')
-//           .doc(widget.userID)
-//           .set(widget.currentMedicationsData!);
-
-//       await FirebaseFirestore.instance
-//           .collection('medicalHistoryData')
-//           .doc(widget.userID)
-//           .set(medicalHistoryData);
-
-//       await FirebaseFirestore.instance
-//           .collection('surgicalHistoryData')
-//           .doc(widget.userID)
-//           .set(surgicalHistoryData);
-
-//       // Navigate to NavBarExample
-//       Navigator.pushReplacement(
-//         context,
-//         CupertinoPageRoute(
-//           builder: (context) => NavBarExample(),
-//         ),
-//       );
-//     } catch (e) {
-//       print('Error creating user profile: $e');
-//     }
-//   }
 // }
+
+///---fully worked web code
+class MedicalHistory extends StatefulWidget {
+  final String? userID;
+  final String? role;
+  final Map<String, dynamic>? userProfileData;
+  final Map<String, dynamic>? comorbiditiesData;
+  final Map<String, dynamic>? allergicMedicationsData;
+  final Map<String, dynamic>? currentMedicationsData;
+
+  MedicalHistory({
+    this.userProfileData,
+    this.role,
+    this.comorbiditiesData,
+    this.allergicMedicationsData,
+    this.currentMedicationsData,
+    this.userID,
+  });
+
+  @override
+  State<MedicalHistory> createState() => _MedicalHistoryState();
+}
+
+class _MedicalHistoryState extends State<MedicalHistory> {
+  final TextEditingController medicalHistoryController1 =
+      TextEditingController();
+  final TextEditingController medicalHistoryController2 =
+      TextEditingController();
+  final TextEditingController surgicalHistoryController1 =
+      TextEditingController();
+  final TextEditingController surgicalHistoryController2 =
+      TextEditingController();
+
+  Map<String, dynamic> medicalHistoryData = {};
+  Map<String, dynamic> surgicalHistoryData = {};
+
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    medicalHistoryController1.dispose();
+    medicalHistoryController2.dispose();
+    surgicalHistoryController1.dispose();
+    surgicalHistoryController2.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: BoldTextWidgetTheme(text: 'Create Profile'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              // Handle skipping profile creation
+              if (widget.role == 'register') {
+                createUserProfile();
+              } else if (widget.role == 'family') {
+                createFamilyProfile();
+              }
+            },
+            child: Text(
+              'Skip',
+              style: TextStyle(color: Colors.blueAccent.shade700),
+            ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          child: Column(
+            children: [
+              BoldTextWidgetTheme(text: 'Other Medical History'),
+              SimpleTextWidgetTheme(
+                text:
+                    'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
+              ),
+              LightDarktextField(
+                controller: medicalHistoryController1,
+                hintText: 'Medical History',
+                keyboardType: TextInputType.text,
+              ),
+              LightDarktextField(
+                controller: medicalHistoryController2,
+                hintText: 'Medical History',
+                keyboardType: TextInputType.text,
+              ),
+              SizedBox(height: 20.0),
+              BoldTextWidgetTheme(text: 'Other Surgical History'),
+              SimpleTextWidgetTheme(
+                text:
+                    'Please provide the diagnosis, year of diagnosis and treatment done if any with minimum 3 lines',
+              ),
+              LightDarktextField(
+                controller: surgicalHistoryController1,
+                hintText: 'Surgical History',
+                keyboardType: TextInputType.text,
+              ),
+              LightDarktextField(
+                controller: surgicalHistoryController2,
+                hintText: 'Surgical History',
+                keyboardType: TextInputType.text,
+              ),
+              isLoading
+                  ? AppLoading()
+                  : InkWell(
+                      onTap: () async {
+                        // Upload profile image and save data
+                        await uploadProfileImageAndSaveData();
+                      },
+                      child: BlueButton(
+                        text: 'Update',
+                      ),
+                    ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> uploadProfileImageAndSaveData() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      // Check if profile image exists in userProfileData
+      if (widget.userProfileData!['profileImage'] != null &&
+          widget.userProfileData!['profileImage'].isNotEmpty &&
+          widget.userProfileData!['profileImage'] is String) {
+        // Convert base64 string to Uint8List (only for web-compatible input)
+        Uint8List fileBytes =
+            base64Decode(widget.userProfileData!['profileImage']);
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+        // Upload the file to Firebase Storage using putData (Firebase Web API)
+        UploadTask uploadTask = FirebaseStorage.instance
+            .ref('profileImages/$fileName')
+            .putData(fileBytes);
+
+        // Get the download URL after upload
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+        // Update the userProfileData with the download URL
+        widget.userProfileData!['profileImage'] = downloadUrl;
+      } else {
+        // If no image is received, store an empty value
+        widget.userProfileData!['profileImage'] = '';
+      }
+
+      // Collect data into maps
+      medicalHistoryData['history1'] = medicalHistoryController1.text;
+      medicalHistoryData['history2'] = medicalHistoryController2.text;
+      medicalHistoryData['userId'] = widget.userID;
+      surgicalHistoryData['surgery1'] = surgicalHistoryController1.text;
+      surgicalHistoryData['surgery2'] = surgicalHistoryController2.text;
+      surgicalHistoryData['userID'] = widget.userID;
+
+      // Save data to Firestore
+      if (widget.role == 'register') {
+        await createUserProfile();
+      } else if (widget.role == 'family') {
+        await createFamilyProfile();
+      }
+    } catch (e) {
+      print('Error uploading profile image: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // Future<void> uploadProfileImageAndSaveData() async {
+  //   try {
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+  //     if (widget.userProfileData!['profileImage'] != null &&
+  //         widget.userProfileData!['profileImage'].isNotEmpty &&
+  //         widget.userProfileData!['profileImage'] is String) {
+  //       // Convert the image path to a File object
+  //       File imageFile = File(widget.userProfileData!['profileImage']);
+  //       Uint8List fileBytes = base64Decode(widget.userProfileData!['profileImage']);
+  //       // Get the file name
+  //       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+  //
+  //       // Upload the file to Firebase Storage
+  //       UploadTask uploadTask = FirebaseStorage.instance
+  //           .ref('profileImages/$fileName')
+  //           .putData(fileBytes);
+  //
+  //       // Get the download URL
+  //       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+  //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  //
+  //       // Update the userProfileData with the download URL
+  //       widget.userProfileData!['profileImage'] = downloadUrl;
+  //     } else {
+  //       // If no image is received, store an empty value
+  //       widget.userProfileData!['profileImage'] = '';
+  //     }
+  //     // String? downloadUrl = '';
+  //     //
+  //     // // Select a file using FilePicker
+  //     // FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     //   type: FileType.image,
+  //     //   allowMultiple: false,
+  //     // );
+  //     //
+  //     // if (result != null) {
+  //     //   Uint8List? fileBytes = result.files.first.bytes;
+  //     //   String fileName = result.files.first.name;
+  //     //
+  //     //   // Upload file to Firebase Storage
+  //     //   UploadTask uploadTask = FirebaseStorage.instance
+  //     //       .ref('profileImages/$fileName')
+  //     //       .putData(fileBytes!);
+  //     //
+  //     //   TaskSnapshot taskSnapshot = await uploadTask;
+  //     //   downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  //     //
+  //     //   // Update the userProfileData with the download URL
+  //     //   widget.userProfileData!['profileImage'] = downloadUrl;
+  //     // } else {
+  //     //   // If no image is selected, store an empty value
+  //     //   widget.userProfileData!['profileImage'] = '';
+  //     // }
+  //
+  //     // Collect data into maps
+  //     medicalHistoryData['history1'] = medicalHistoryController1.text;
+  //     medicalHistoryData['history2'] = medicalHistoryController2.text;
+  //     medicalHistoryData['userId'] = widget.userID;
+  //     surgicalHistoryData['surgery1'] = surgicalHistoryController1.text;
+  //     surgicalHistoryData['surgery2'] = surgicalHistoryController2.text;
+  //     surgicalHistoryData['userID'] = widget.userID;
+  //
+  //     // Save data to Firestore
+  //     if (widget.role == 'register') {
+  //       await createUserProfile();
+  //     } else if (widget.role == 'family') {
+  //       await createFamilyProfile();
+  //     }
+  //   } catch (e) {
+  //     print('Error uploading profile image: $e');
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+  //
+
+  Future<void> createFamilyProfile() async {
+    try {
+      // Generate a random 9-digit number for userfamilyId
+      String userfamilyId =
+          (Random().nextInt(900000000) + 100000000).toString();
+
+      // Add userfamilyId to each map
+      widget.userProfileData!['userfamilyId'] = userfamilyId;
+      widget.comorbiditiesData!['userfamilyId'] = userfamilyId;
+      widget.allergicMedicationsData!['userfamilyId'] = userfamilyId;
+      widget.currentMedicationsData!['userfamilyId'] = userfamilyId;
+      medicalHistoryData['userfamilyId'] = userfamilyId;
+      surgicalHistoryData['userfamilyId'] = userfamilyId;
+
+      await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(widget.userID)
+          .set({
+        'docId': widget.userID, // Add docId field with userID value
+      });
+
+      await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(widget.userID)
+          .collection('userProfileData')
+          .doc(userfamilyId)
+          .set(widget.userProfileData!);
+
+      await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(widget.userID)
+          .collection('comorbiditiesData')
+          .doc(userfamilyId)
+          .set(widget.comorbiditiesData!);
+
+      await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(widget.userID)
+          .collection('allergicMedicationsData')
+          .doc(userfamilyId)
+          .set(widget.allergicMedicationsData!);
+
+      await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(widget.userID)
+          .collection('currentMedicationsData')
+          .doc(userfamilyId)
+          .set(widget.currentMedicationsData!);
+
+      await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(widget.userID)
+          .collection('medicalHistoryData')
+          .doc(userfamilyId)
+          .set(medicalHistoryData);
+
+      await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(widget.userID)
+          .collection('surgicalHistoryData')
+          .doc(userfamilyId)
+          .set(surgicalHistoryData);
+
+      // Navigate to NavBarExample
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => NavBarExample(),
+        ),
+      );
+    } catch (e) {
+      print('Error creating family profile: $e');
+    }
+  }
+
+  Future<void> createUserProfile() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('userProfileData')
+          .doc(widget.userID)
+          .set(widget.userProfileData!);
+
+      await FirebaseFirestore.instance
+          .collection('comorbiditiesData')
+          .doc(widget.userID)
+          .set(widget.comorbiditiesData!);
+
+      await FirebaseFirestore.instance
+          .collection('allergicMedicationsData')
+          .doc(widget.userID)
+          .set(widget.allergicMedicationsData!);
+      await FirebaseFirestore.instance
+          .collection('currentMedicationsData')
+          .doc(widget.userID)
+          .set(widget.currentMedicationsData!);
+
+      await FirebaseFirestore.instance
+          .collection('medicalHistoryData')
+          .doc(widget.userID)
+          .set(medicalHistoryData);
+
+      await FirebaseFirestore.instance
+          .collection('surgicalHistoryData')
+          .doc(widget.userID)
+          .set(surgicalHistoryData);
+
+      // Navigate to NavBarExample
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => NavBarExample(),
+        ),
+      );
+    } catch (e) {
+      print('Error creating user profile: $e');
+    }
+  }
+}

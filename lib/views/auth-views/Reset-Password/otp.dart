@@ -11,7 +11,7 @@
 // import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // import 'package:demo_app/constants/linker.dart';
- import 'package:ecare/views/auth-views/login-view.dart';
+import 'package:ecare/views/auth-views/login-view.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:ecare/constants/linker.dart';
@@ -107,7 +107,7 @@ class _OTPScreenState extends State<OTPScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) => SignupView()));
+                                    builder: (context) => LoginView()));
                             //_login();
                           },
                           child: BlueButton(

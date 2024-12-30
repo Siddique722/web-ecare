@@ -7,7 +7,6 @@ export 'package:flutter/services.dart';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'dart:math';
 export 'package:firebase_auth/firebase_auth.dart';
-export 'package:razorpay_flutter/razorpay_flutter.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:ecare/constants/colors.dart';
 export 'package:ecare/widgets/blue-button.dart';

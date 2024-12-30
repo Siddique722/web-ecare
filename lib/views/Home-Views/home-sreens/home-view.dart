@@ -494,6 +494,10 @@ class _HomeViewState extends State<HomeView> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true); // User confirms
+                Navigator.pushReplacement(
+                    context,
+                    CupertinoDialogRoute(
+                        builder: (context) => LoginView(), context: context));
               },
               child: const Text(
                 'Delete',

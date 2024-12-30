@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:razorpay_web/razorpay_web.dart';
 import '../../../constants/linker.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/foundation.dart'
-    show kIsWeb; // Import to check platform
+import 'package:dio/dio.dart';
+
+import 'dart:js' as js;
 
 class CArtScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -25,15 +26,45 @@ class _CArtScreenState extends State<CArtScreen> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     // Fetch data from Firestore
-    _fetchCartItemsFromFirestore();}
-  List<Map<String, dynamic>> fetchedCartItems = [];Future<void> _fetchCartItemsFromFirestore() async {
+    _fetchCartItemsFromFirestore();
+  }
+
+  List<Map<String, dynamic>> fetchedCartItems = [];
+  Future<void> _fetchCartItemsFromFirestore() async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    final cartCollection = FirebaseFirestore.instance.collection('usersCartData').doc(userId).collection('Cart');
+    final cartCollection = FirebaseFirestore.instance
+        .collection('usersCartData')
+        .doc(userId)
+        .collection('Cart');
     final querySnapshot = await cartCollection.get();
-    for (var doc in querySnapshot.docs) {fetchedCartItems.add({'name': doc['name'], 'dob': doc['dob'], 'blood': doc['blood'], 'price': doc['price'], 'contact1': doc['contact1'], 'contact2': doc['contact2'], 'imageUrl': doc['imageUrl']});}setState(() {firestoreCartItems = fetchedCartItems;widget.totalPrice = firestoreCartItems.fold(0,
-        (sum, item) => sum + int.parse(item['price'] ?? '0'),);});}
-  @override void dispose() {super.dispose();_razorpay.clear();}
-  @override Widget build(BuildContext context) {
+    for (var doc in querySnapshot.docs) {
+      fetchedCartItems.add({
+        'name': doc['name'],
+        'dob': doc['dob'],
+        'blood': doc['blood'],
+        'price': doc['price'],
+        'contact1': doc['contact1'],
+        'contact2': doc['contact2'],
+        'imageUrl': doc['imageUrl']
+      });
+    }
+    setState(() {
+      firestoreCartItems = fetchedCartItems;
+      widget.totalPrice = firestoreCartItems.fold(
+        0,
+        (sum, item) => sum + int.parse(item['price'] ?? '0'),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _razorpay.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -42,23 +73,57 @@ class _CArtScreenState extends State<CArtScreen> {
       floatingActionButton:
           firestoreCartItems.isEmpty ? null : _buildFloatingActionButton(),
       body: firestoreCartItems.isEmpty
-          ? Column(children: [Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                    Text('Cart', style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+          ? Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Cart',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                     InkWell(
-                      onTap: () {Navigator.push(
-                          context,                         MaterialPageRoute(
-                            builder: (context) => OrderHistoryScreen(),),                       );},
-                      child: Container(width: 200, padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(10),),
-                        child: Center(child: Text(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OrderHistoryScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 200,
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
                             'Order History',
-                          style: TextStyle(color: Colors.white),),),),)],), SizedBox(height: 50.h,), Center(
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 50.h,
+                ),
+                Center(
                   child: Text(
                     'Your cart is empty',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),),],)
-          : _buildCartList(firestoreCartItems),);}
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            )
+          : _buildCartList(firestoreCartItems),
+    );
+  }
+
   Widget _buildFloatingActionButton() {
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
@@ -70,70 +135,113 @@ class _CArtScreenState extends State<CArtScreen> {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
-        children: [Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text('Total'), Row(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Total'),
+              Row(
                 children: [
                   Icon(Icons.currency_rupee, size: 17),
-                  Text('${widget.totalPrice}'),],),],),
+                  Text('${widget.totalPrice}'),
+                ],
+              ),
+            ],
+          ),
           SizedBox(height: 10),
           GestureDetector(
             onTap: () {
-              _showCheckoutBottomSheet(context);},
+              _showCheckoutBottomSheet(context);
+            },
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
                 color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: Center(
                 child: Text(
                   'Checkout',
-                  style: TextStyle(color: Colors.white, fontSize: 16),),),),),],),);}
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCartList(List<Map<String, dynamic>> cartItems) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              'Cart',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-            InkWell(onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OrderHistoryScreen(),),);}, child: Container(
-                width: 200,
-                padding: EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(10),),
-                child: Center(
-                  child: Text(
-                    'Order History',
-                    style: TextStyle(color: Colors.white),),),),),],),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-              itemCount: cartItems.length,
-              itemBuilder: (context, index) {
-                final item = cartItems[index];
-                return Card(
-                  child: ListTile(
-                    title: Text('Name: ${item['name']}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Date of Birth: ${item['dob']}'),
-                        Text('Blood Group: ${item['blood']}'),
-                        Text('Price: ${item['price']}'),
-                        Text('Contact1: ${item['contact1']}'),],),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        _deleteCartItem(index);},),),);},),),),]);}
+    return Column(children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text(
+            'Cart',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OrderHistoryScreen(),
+                ),
+              );
+            },
+            child: Container(
+              width: 200,
+              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  'Order History',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            itemCount: cartItems.length,
+            itemBuilder: (context, index) {
+              final item = cartItems[index];
+              return Card(
+                child: ListTile(
+                  title: Text('Name: ${item['name']}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Date of Birth: ${item['dob']}'),
+                      Text('Blood Group: ${item['blood']}'),
+                      Text('Price: ${item['price']}'),
+                      Text('Contact1: ${item['contact1']}'),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      _deleteCartItem(index);
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    ]);
+  }
+
   void _deleteCartItem(int index) async {
     setState(() {
       firestoreCartItems.removeAt(index);
@@ -159,7 +267,10 @@ class _CArtScreenState extends State<CArtScreen> {
       (sum, item) => sum + int.parse(item['price'] ?? '0'),
     );
     setState(() {
-      widget.totalPrice = updatedTotalPrice;});}
+      widget.totalPrice = updatedTotalPrice;
+    });
+  }
+
   void _showCheckoutBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -186,14 +297,19 @@ class _CArtScreenState extends State<CArtScreen> {
                   'Order Summary',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,),),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 LightDarktextField(
                   controller: addressController,
                   hintText: 'Address',
-                  keyboardType: TextInputType.text,), LightDarktextField(
+                  keyboardType: TextInputType.text,
+                ),
+                LightDarktextField(
                   controller: pinCodeController,
                   hintText: 'Pin Code',
-                  keyboardType: TextInputType.number,),
+                  keyboardType: TextInputType.number,
+                ),
                 SizedBox(height: 15),
                 ...firestoreCartItems.map(
                   (item) => Row(
@@ -205,7 +321,12 @@ class _CArtScreenState extends State<CArtScreen> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Icon(Icons.currency_rupee, size: 17),
-                          Text('${item['price']}'),],),],),),
+                          Text('${item['price']}'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
                 Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -219,57 +340,108 @@ class _CArtScreenState extends State<CArtScreen> {
                         Icon(Icons.currency_rupee, size: 17),
                         Text(
                           '${widget.totalPrice}',
-                          style: TextStyle(fontSize: 18),),],),],),
-                SizedBox(height: 20),
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context); // Close the bottom sheet
-                    _startPayment();},
+                    createOrderWithDio();
+                    // _startPayment();
+                  },
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         'Proceed to Payment',
-                        style: TextStyle(color: Colors.white, fontSize: 16),),),),),],),),);},);}
-  // void _startPayment() {
-  //   var options = {
-  //     'key': 'rzp_test_4xCkdGHvFwGxuJ',
-  //     'amount': widget.totalPrice * 100,
-  //     'name': 'E-Cart App',
-  //     'description': 'Order Payment',
-  //     'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'}
-  //   };
-  //   try {
-  //     _razorpay.open(options);
-  //   } catch (e) {
-  //     print("Error starting payment: $e");
-  //   }
-  // }
-  void _startPayment() {
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> createOrderWithDio() async {
+    const String url = "https://hpulse-api.onrender.com/create-order";
+
+    // Order creation request body
+    Map<String, dynamic> body = {
+      "amount": widget.totalPrice, // Amount in paise (100 INR = 10000 paise)
+      "currency": "INR",
+      "receipt": "order_receipt_123",
+      "payment_capture": "1",
+    };
+
+    try {
+      Dio dio = Dio();
+
+      // Sending POST request to the server
+      Response response = await dio.post(
+        url,
+        data: body,
+        options: Options(
+          headers: {"Content-Type": "application/json"},
+        ),
+      );
+
+      if (response.data['success']) {
+        String orderId = response.data['order_id'];
+        _startPayment(orderId, int.parse(widget.totalPrice.toString()));
+      } else {
+        throw Exception(
+            "Failed to create order: ${response.data['message'] ?? 'Unknown error'}");
+      }
+    } catch (e) {
+      print("Error creating order: ${e}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Order creation failed: $e")),
+      );
+    }
+  }
+
+  void _startPayment(String orderId, int amount) {
+    print("==============1");
     var options = {
       // Replace the test key with your live key
-      'key': 'rzp_live_OLMl0WTMHz0FEs', // Live API Key (not Merchant ID)
+      'key':
+          'rzp_live_amIyo5XZmakZUK', //'rzp_live_OLMl0WTMHz0FEs', // Live API Key (not Merchant ID)
       'amount': widget.totalPrice *
           100, // Razorpay expects the amount in the smallest currency unit (e.g., paise for INR)
-      'name': 'E-Cart App',
+      'name': 'H Pulse',
+      'order_id': orderId,
       'description': 'Order Payment',
       'prefill': {
         'contact': '8888888888', // Prefill contact number
         'email': 'test@razorpay.com' // Prefill email
       }
     };
+//    js.context.callMethod('Razorpay', [options])?.callMethod('open');
 
     try {
       _razorpay.open(options);
     } catch (e) {
-      print("Error starting payment: $e");}}
+      print("Error starting payment: $e");
+    }
+  }
+
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    print("Payment Success: ${response.paymentId}");
+    print(
+        "---------------------------------------------------------------Payment Success: ${response.paymentId}");
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final cartCollection = FirebaseFirestore.instance.collection('CartData');
@@ -321,7 +493,8 @@ class _CArtScreenState extends State<CArtScreen> {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    print("Payment Error: ${response.message}");
+    print(
+        "---------------------------------------------Payment Error: ${response.message}");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -362,7 +535,8 @@ class _CArtScreenState extends State<CArtScreen> {
       },
     );
 
-    print("External Wallet: ${response.walletName}");
+    print(
+        "------------------------------------External Wallet: ${response.walletName}");
   }
 
   void _showSuccessDialog() {
@@ -406,6 +580,8 @@ class _CArtScreenState extends State<CArtScreen> {
 //     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
 //     // Fetch data from Firestore
 //     _fetchCartItemsFromFirestore();
+
+
 //   }
 //
 //   List<Map<String, dynamic>> fetchedCartItems = [];

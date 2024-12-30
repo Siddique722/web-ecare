@@ -15,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart'; // Import dart:io to detect platform
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -29,9 +30,28 @@ class _LoginViewState extends State<LoginView> {
   bool _isLoadingg = false;
   bool isLoading = false;
 
+//   bool _isLoadingg = false;
+//   bool isLoading = false;
+//
+  void _signInWithGoogle() async {
+    setState(() {
+      _isLoadingg = true;
+    });
+    await AuthMethods().signInWithGoogle(context);
+    setState(() {
+      _isLoadingg = false;
+    });
+  }
 
-
-
+  void _signInWithApple() async {
+    setState(() {
+      isLoading = true;
+    });
+    await AuthMethods().signInWithApple(context);
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   bool _isLoading = false;
   String _errorMessage = '';
@@ -194,12 +214,54 @@ class _LoginViewState extends State<LoginView> {
                         ],
                       ),
                       SizedBox(height: 20.h),
-
-                      // Google login button for Android
-
+                      //  if (!kIsWeb && Platform.isAndroid)
+                      //if (Platform.isAndroid)
+                      _isLoadingg
+                          ? AppLoading()
+                          : OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10.h, horizontal: 20),
+                                side: BorderSide(color: Colors.black),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                backgroundColor: Colors.transparent,
+                              ),
+                              icon:
+                                  Icon(Icons.g_translate, color: Colors.black),
+                              label: Text(
+                                'Continue with Google',
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16.sp),
+                              ),
+                              onPressed: _signInWithGoogle,
+                            ),
 
                       // Apple login button for iOS
+                      if (!kIsWeb && Platform.isIOS)
+                        //   if (Platform.isIOS)
+                        isLoading
+                            ? AppLoading()
+                            : OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10.h, horizontal: 20),
+                                  side: BorderSide(color: Colors.black),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  backgroundColor: Colors.transparent,
+                                ),
+                                icon: Icon(Icons.apple, color: Colors.black),
+                                label: Text(
+                                  'Continue with Apple',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16.sp),
+                                ),
+                                onPressed: _signInWithApple,
+                              ),
+                      // Google login button for Android
 
+                      // Apple login button for iOS
                     ],
                   ),
                 ),

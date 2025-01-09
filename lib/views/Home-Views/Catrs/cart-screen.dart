@@ -383,7 +383,7 @@ class _CArtScreenState extends State<CArtScreen> {
     Map<String, dynamic> body = {
       "amount": widget.totalPrice, // Amount in paise (100 INR = 10000 paise)
       "currency": "INR",
-      "receipt": "order_receipt_123",
+      "receipt": "order_ihjureceipt_123",
       "payment_capture": "1",
     };
 

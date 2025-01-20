@@ -62,6 +62,7 @@ dependencies:
   sign_in_with_apple: ^6.1.4
   razorpay_web: ^2.0.0
   dio: ^5.7.0
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

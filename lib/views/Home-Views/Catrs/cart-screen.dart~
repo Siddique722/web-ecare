@@ -377,8 +377,8 @@ class _CArtScreenState extends State<CArtScreen> {
       },
     );
   }
-  Future<String?> createOrder(int amount, String currency, String receipt) async
-  {
+  Future<String?> createOrder(
+      int amount, String currency, String receipt) async {
     const String keyId = 'rzp_live_amIyo5XZmakZUK';
     const String keySecret =
         'LcsKwsb7c3CgCOXyiEDx17BZ'; // Replace with your Razorpay secret key

@@ -1,6 +1,6 @@
-// import 'package:demo_app/constants/linker.dart';
+// import 'package:hpulse/constants/linker.dart';
 //
-//import 'package:demo_app/views/auth-views/Reset-Password/otp.dart';
+//import 'package:hpulse/views/auth-views/Reset-Password/otp.dart';
 // import 'package:flutter/cupertino.dart';
 
 // class ReSetEmail extends StatefulWidget {
@@ -137,18 +137,16 @@
 // }
 
 import 'package:ecare/constants/linker.dart';
-import 'package:flutter/cupertino.dart';
 
 ///-----------------
 ///
-// import 'package:demo_app/constants/linker.dart';
-// import 'package:demo_app/views/auth-views/Reset-Password/otp.dart';
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ReSetEmail extends StatefulWidget {
   const ReSetEmail({super.key});

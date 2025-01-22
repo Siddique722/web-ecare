@@ -1,20 +1,9 @@
 import 'dart:io'; // Import dart:io to detect platform
-import 'package:ecare/constants/colors.dart';
-import 'package:ecare/main.dart';
-import 'package:ecare/views/auth-views/signup-view.dart';
-import 'package:ecare/widgets/blue-button.dart';
-import 'package:ecare/widgets/custom-textfieldwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:io';
+import 'dart:developer' as dev;
 
 import 'package:ecare/constants/linker.dart';
-
-import 'package:flutter/cupertino.dart';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart'; // Import dart:io to detect platform
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -30,14 +19,13 @@ class _LoginViewState extends State<LoginView> {
   bool _isLoadingg = false;
   bool isLoading = false;
 
-//   bool _isLoadingg = false;
-//   bool isLoading = false;
-//
   void _signInWithGoogle() async {
     setState(() {
       _isLoadingg = true;
     });
+    print('button pressing--------');
     await AuthMethods().signInWithGoogle(context);
+    print('------2');
     setState(() {
       _isLoadingg = false;
     });
@@ -47,41 +35,76 @@ class _LoginViewState extends State<LoginView> {
     setState(() {
       isLoading = true;
     });
+    print('button pressing--------');
     await AuthMethods().signInWithApple(context);
+    print('------2');
     setState(() {
       isLoading = false;
     });
   }
 
-  bool _isLoading = false;
   String _errorMessage = '';
-
   Future<void> _login() async {
-    //  if (_formKey.currentState?.validate() ?? false) {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-    });
+    if (_formKey.currentState?.validate() ?? false) {
+      setState(() {
+        isLoading = true;
+        _errorMessage = '';
+      });
 
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      Navigator.pushReplacement(
-          context, CupertinoPageRoute(builder: (context) => NavBarExample()));
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message ?? 'An error occurred';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      try {
+        // Firebase Authentication
+        final credential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        final user = credential.user;
+        if (user != null) {
+          print("User logged in: ${user.email}");
+          Navigator.pushReplacement(
+            context,
+            CupertinoPageRoute(builder: (context) => NavBarExample()),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+
+        if (e.code == 'user-not-found') {
+          _errorMessage = 'No user found for that email.';
+        } else if (e.code == 'wrong-password') {
+          _errorMessage = 'Wrong password provided.';
+        } else {
+          _errorMessage = 'Error: ${e.message}';
+        }
+
+        print('FirebaseAuthException: ${e.code} - ${e.message}');
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        _errorMessage = 'Unexpected error occurred: $e';
+        print('Error: $e');
+      }
     }
-    // }
   }
 
+// Future<void> _login() async {
+  //   if (_formKey.currentState?.validate() ?? false) {
+  //     setState(() {
+  //       _isLoading = true;
+  //       _errorMessage = '';
+  //     });
+  //       final credential =
+  //       await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //         email: _emailController.text.trim(),
+  //         password: _passwordController.text.trim(),
+  //       );
+  //       print("Credentials $credential");
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,7 +184,7 @@ class _LoginViewState extends State<LoginView> {
                                   CupertinoPageRoute(
                                       builder: (context) => ReSetEmail()));
                             },
-                            child: Text('Forget Password?',
+                            child: Text('Forgot Password?',
                                 style: TextStyle(
                                   fontFamily: "GilroyBold",
                                   color: AppColors.blueColor,
@@ -179,7 +202,7 @@ class _LoginViewState extends State<LoginView> {
                             style: TextStyle(color: Colors.red),
                           ),
                         ),
-                      if (_isLoading)
+                      if (isLoading)
                         AppLoading()
                       else
                         InkWell(
@@ -214,29 +237,50 @@ class _LoginViewState extends State<LoginView> {
                         ],
                       ),
                       SizedBox(height: 20.h),
-                      //  if (!kIsWeb && Platform.isAndroid)
+
+                      // Google login button for Android
+                      //    if (!kIsWeb)
                       //if (Platform.isAndroid)
                       _isLoadingg
                           ? AppLoading()
+                          :
+                          // OutlinedButton.icon(
+                          //     style: OutlinedButton.styleFrom(
+                          //       padding: EdgeInsets.symmetric(
+                          //           vertical: 10.h, horizontal: 20),
+                          //       side: BorderSide(color: Colors.black),
+                          //       shape: RoundedRectangleBorder(
+                          //           borderRadius: BorderRadius.circular(30)),
+                          //       backgroundColor: Colors.transparent,
+                          //     ),
+                          //     icon:
+                          //         Icon(Icons.g_translate, color: Colors.black),
+                          //     label: Text(
+                          //       'Continue with Google',
+                          //       style: TextStyle(
+                          //           color: Colors.black, fontSize: 16.sp),
+                          //     ),
+                          //     onPressed: () {
+                          //       _signInWithGoogle();
+                          //     } // _signInWithGoogle,
+                          //     ),
+                      //   if (!kIsWeb && Platform.isAndroid)
+                      _isLoadingg
+                          ? AppLoading()
                           : OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10.h, horizontal: 20),
-                                side: BorderSide(color: Colors.black),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30)),
-                                backgroundColor: Colors.transparent,
-                              ),
-                              icon:
-                                  Icon(Icons.g_translate, color: Colors.black),
-                              label: Text(
-                                'Continue with Google',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 16.sp),
-                              ),
-                              onPressed: _signInWithGoogle,
-                            ),
-
+                        icon: Image.asset(
+                          "assets/ic_google.png",
+                          scale: 4,
+                        ),
+                        // icon: Icon(Icons.g_translate,
+                        //     color: Colors.black),
+                        label: Text(
+                          'Continue with Google',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: _signInWithGoogle,
+                      ),
+                      SizedBox(height: 20.h),
                       // Apple login button for iOS
                       if (!kIsWeb && Platform.isIOS)
                         //   if (Platform.isIOS)
@@ -257,11 +301,10 @@ class _LoginViewState extends State<LoginView> {
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 16.sp),
                                 ),
-                                onPressed: _signInWithApple,
-                              ),
-                      // Google login button for Android
-
-                      // Apple login button for iOS
+                                onPressed: () {
+                                  _signInWithApple();
+                                } // _signInWithApple,
+                                ),
                     ],
                   ),
                 ),
@@ -288,24 +331,26 @@ class AppLoading extends StatelessWidget {
 
 ///=------------------------------------------------====
 ///
-
-//import 'package:flutter/cupertino.dart';
-//import 'package:flutter/foundation.dart';
+// import 'dart:io'; // Import dart:io to detect platform
+// import 'package:hpulse/services.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:hpulse/constants/linker.dart';
+// import 'package:flutter/foundation.dart';
 
 // class LoginView extends StatefulWidget {
 //   const LoginView({super.key});
-//
+
 //   @override
 //   State<LoginView> createState() => _LoginViewState();
 // }
-//
+
 // class _LoginViewState extends State<LoginView> {
 //   final _emailController = TextEditingController();
 //   final _passwordController = TextEditingController();
 //   final _formKey = GlobalKey<FormState>();
 //   bool _isLoadingg = false;
 //   bool isLoading = false;
-//
+
 //   void _signInWithGoogle() async {
 //     setState(() {
 //       _isLoadingg = true;
@@ -315,7 +360,7 @@ class AppLoading extends StatelessWidget {
 //       _isLoadingg = false;
 //     });
 //   }
-//
+
 //   void _signInWithApple() async {
 //     setState(() {
 //       isLoading = true;
@@ -325,7 +370,7 @@ class AppLoading extends StatelessWidget {
 //       isLoading = false;
 //     });
 //   }
-//
+
 //   bool _isLoading = false;
 //   String _errorMessage = '';
 //   Future<void> _login() async {
@@ -334,7 +379,7 @@ class AppLoading extends StatelessWidget {
 //         _isLoading = true;
 //         _errorMessage = '';
 //       });
-//
+
 //       try {
 //         // Web-specific logic
 //         if (kIsWeb) {
@@ -354,7 +399,7 @@ class AppLoading extends StatelessWidget {
 //             password: _passwordController.text.trim(),
 //           );
 //         }
-//
+
 //         // If login is successful, navigate to another page
 //         Navigator.pushReplacement(
 //           context,
@@ -371,23 +416,23 @@ class AppLoading extends StatelessWidget {
 //       }
 //     }
 //   }
-//
+
 //   // Future<void> _login() async {
 //   //   print("-----------------------------1");
 //   //   if (_formKey.currentState?.validate() ?? false) {
 //   //     print("-----------------------------2");
-//
+
 //   //     setState(() {
 //   //       print("-----------------------------3");
-//
+
 //   //       _isLoading = true;
 //   //       _errorMessage = '';
 //   //     });
 //   //     print("-----------------------------4");
-//
+
 //   //     try {
 //   //       print("-----------------------------5");
-//
+
 //   //       await FirebaseAuth.instance.signInWithEmailAndPassword(
 //   //         email: _emailController.text.trim(),
 //   //         password: _passwordController.text.trim(),
@@ -405,7 +450,7 @@ class AppLoading extends StatelessWidget {
 //   //     }
 //   //   }
 //   // }
-//
+
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -413,7 +458,7 @@ class AppLoading extends StatelessWidget {
 //         builder: (context, constraints) {
 //           // Check if the screen width is above 600 pixels for larger (web/tablet) devices
 //           bool isMobile = constraints.maxWidth < 600;
-//
+
 //           return Stack(
 //             children: [
 //               Image.network(
@@ -614,10 +659,10 @@ class AppLoading extends StatelessWidget {
 //     );
 //   }
 // }
-//
+
 // class AppLoading extends StatelessWidget {
 //   const AppLoading({super.key});
-//
+
 //   @override
 //   Widget build(BuildContext context) {
 //     return SpinKitCircle(

@@ -1,13 +1,12 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecare/constants/linker.dart';
 import 'package:ecare/views/Home-Views/Users-View/show-users.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-
-import 'package:ecare/constants/linker.dart';
 
 class ScanQRCodeHomw extends StatefulWidget {
   const ScanQRCodeHomw({super.key});
@@ -48,7 +47,7 @@ class _ScanQRCodeHomwState extends State<ScanQRCodeHomw> {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Scan QR code on your E-Care ID Card'),
+                        Text('Scan QR code on your H Pulse ID Card'),
                         Icon(Icons.qr_code_scanner_rounded)
                       ])),
             ),
@@ -57,7 +56,7 @@ class _ScanQRCodeHomwState extends State<ScanQRCodeHomw> {
             ),
             SimpleTextWidgetTheme(
                 text:
-                    '**Your medical data cannot be accessed by anyone includeing the doctor without your authentication'),
+                    '**Your medical data cannot be accessed by anyone including the doctor without your authentication'),
           ],
         ),
       ),
@@ -119,19 +118,22 @@ class _QRViewExampleState extends State<QRViewExample> {
             .collection('userProfileData')
             .where('primaryContact', isEqualTo: result!.code)
             .get();
-        //log('==============================================1');
+     //  log('==============================================1');
 
         if (userDoc.docs.isNotEmpty) {
           final userData = userDoc.docs.first.data();
           final email = userData['email'];
-          //  log('==============================================2');
+       //   log('==============================================2');
           print('USer email=$email  =================================');
           // Stop the camera and navigate to the result screen
           controller.dispose();
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => QRCodeResultScreen(userData: userData),
+              builder: (context) => QRCodeResultScreen(
+                userData: userData,
+                role: 'admin',
+              ),
             ),
           );
         } else {
@@ -149,13 +151,13 @@ class _QRViewExampleState extends State<QRViewExample> {
             }
 
             // Logging the total number of documents
-            //log('Total number of documents in familyUser: ${familyUserDocIds.length}');
+         //   log('Total number of documents in familyUser: ${familyUserDocIds.length}');
 
             bool userFound = false;
 
             // Loop through the list of 'docId' and check each subcollection
             for (var docId in familyUserDocIds) {
-              // log('Checking for primaryContact in docId: $docId');
+           //   log('Checking for primaryContact in docId: $docId');
 
               // Get the 'userProfileData' subcollection for each 'familyUser' document
               final familyUserProfileData = await FirebaseFirestore.instance
@@ -172,15 +174,17 @@ class _QRViewExampleState extends State<QRViewExample> {
                 final email = userData['email'];
 
                 // Log found user data
-                //  log('User found with email: $email');
+             //   log('User found with email: $email');
 
                 // Stop the camera and navigate to the result screen
                 controller.dispose();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        QRCodeResultScreen(userData: userData),
+                    builder: (context) => QRCodeResultScreen(
+                      userData: userData,
+                      role: 'family',
+                    ),
                   ),
                 );
                 userFound = true;
@@ -201,7 +205,12 @@ class _QRViewExampleState extends State<QRViewExample> {
               controller.resumeCamera();
             }
           } catch (e) {
-            // log('Error: $e');
+           // log('Error: $e');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error: $e'),
+              ),
+            );
           }
         }
 
@@ -278,8 +287,9 @@ class _QRViewExampleState extends State<QRViewExample> {
 
 class QRCodeResultScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
+  final String role;
 
-  QRCodeResultScreen({required this.userData});
+  QRCodeResultScreen({required this.userData, required this.role});
 
   @override
   _QRCodeResultScreenState createState() => _QRCodeResultScreenState();
@@ -355,98 +365,164 @@ class _QRCodeResultScreenState extends State<QRCodeResultScreen> {
         padding: const EdgeInsets.all(16.0),
         child: isAuthenticated
             ? InkWell(
-                onTap: () async {
-                  print('button pressing---');
-                  String user = widget.userData['userId'];
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        content: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(width: 20),
-                            Text('Loading...'),
-                          ],
-                        ),
-                      );
-                    },
-                  );
+          onTap: () async {
+            print('button pressing---');
+            String user = widget.userData['userId'];
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(width: 20),
+                      Text('Loading...'),
+                    ],
+                  ),
+                );
+              },
+            );
 
-                  final allergicMedicationsData =
-                      await _fetchUserDataCollection(
-                          'allergicMedicationsData', user);
-                  final comorbiditiesData =
-                      await _fetchUserDataCollection('comorbiditiesData', user);
-                  final currentMedicationsData = await _fetchUserDataCollection(
-                      'currentMedicationsData', user);
-                  final medicalHistoryData = await _fetchUserDataCollection(
-                      'medicalHistoryData', user);
-                  final surgicalHistoryData = await _fetchUserDataCollection(
-                      'surgicalHistoryData', user);
+            final allergicMedicationsData = widget.role == 'admin'
+                ? await _fetchUserDataCollection(
+                'allergicMedicationsData', user)
+                : await _fetchFamilyUserDataCollection(
+                'allergicMedicationsData', user);
+            final comorbiditiesData = widget.role == 'admin'
+                ? await _fetchUserDataCollection(
+                'comorbiditiesData', user)
+                : await _fetchFamilyUserDataCollection(
+                'comorbiditiesData', user);
+            // dev.log(comorbiditiesData);
 
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserDetailScreen(
-                        role: 'family',
-                        image: widget.userData!['profileImage'],
-                        gender: widget.userData!['gender'] ?? 'No Data',
-                        primary: widget.userData!['primaryContact'] ??
-                            'No Primary Contact',
-                        emergencyContact1:
-                            widget.userData!['emergencyContact1'] ??
-                                'No EmergencyContact1',
-                        emergencyContact2:
-                            widget.userData!['emergencyContact2'] ??
-                                'No EmergencyContact2',
-                        name: widget.userData!['name'] ?? 'No Name',
-                        bloodGroup:
-                            widget.userData!['bloodGroup'] ?? 'No Blood Group',
-                        dateOfBirth:
-                            widget.userData!['dateOfBirth'] ?? 'No DOB',
-                        allergicMedicationsData: allergicMedicationsData,
-                        comorbiditiesData: comorbiditiesData,
-                        currentMedicationsData: currentMedicationsData,
-                        medicalHistoryData: medicalHistoryData,
-                        surgicalHistoryData: surgicalHistoryData,
-                      ),
+            //   await _fetchUserDataCollection('comorbiditiesData', user);
+            final currentMedicationsData = widget.role == 'admin'
+                ? await _fetchUserDataCollection(
+                'currentMedicationsData', user)
+                : await _fetchFamilyUserDataCollection(
+                'currentMedicationsData', user);
+            // await _fetchUserDataCollection(
+            //     'currentMedicationsData', user);
+            final medicalHistoryData = widget.role == 'admin'
+                ? await _fetchUserDataCollection(
+                'medicalHistoryData', user)
+                : await _fetchFamilyUserDataCollection(
+                'medicalHistoryData', user);
+            // await _fetchUserDataCollection(
+            //     'medicalHistoryData', user);
+            final surgicalHistoryData = widget.role == 'admin'
+                ? await _fetchUserDataCollection(
+                'surgicalHistoryData', user)
+                : await _fetchFamilyUserDataCollection(
+                'surgicalHistoryData', user);
+            // await _fetchUserDataCollection(
+            //     'surgicalHistoryData', user);
+            print(
+                "1-----------------------$surgicalHistoryData---------------------------");
+            print(
+                "2-----------------------$medicalHistoryData---------------------------");
+            print(
+                "3-----------------------$currentMedicationsData---------------------------");
+            print(
+                "4-----------------------$comorbiditiesData---------------------------");
+            print(
+                "5-----------------------$allergicMedicationsData---------------------------");
+            print("6-----------------------${widget
+                .userData}---------------------------");
+
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    UserDetailScreen(
+                      role: widget.role,
+                      image: widget.userData!['profileImage'] ?? "",
+                      gender: widget.userData!['gender'] ?? 'No Data',
+                      primary: widget.userData!['primaryContact'] ??
+                          'No Primary Contact',
+                      emergencyContact1: widget
+                          .userData!['emergencyContact1'] ??
+                          'No EmergencyContact1',
+                      emergencyContact2: widget
+                          .userData!['emergencyContact2'] ??
+                          'No EmergencyContact2',
+                      name: widget.userData!['name'] ?? 'No Name',
+                      bloodGroup: widget.userData!['bloodGroup'] ??
+                          'No Blood Group',
+                      dateOfBirth: widget.userData!['dateOfBirth'] ?? 'No DOB',
+                      allergicMedicationsData: allergicMedicationsData ?? [],
+                      comorbiditiesData: comorbiditiesData ?? [],
+                      currentMedicationsData: currentMedicationsData ?? [],
+                      medicalHistoryData: medicalHistoryData ?? [],
+                      surgicalHistoryData: surgicalHistoryData ?? [],
                     ),
-                  );
-                },
-                child: Card(
-                  elevation: 4.0,
-                  child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: ListTile(
-                        title: Text(
-                          'Name: ${widget.userData['name']}',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          'Blood Group: ${widget.userData['bloodGroup']}\nDate of Birth: ${widget.userData['dateOfBirth']}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      )),
-                ),
-              )
-            : Center(
-                child: Text(
-                  'Please wait while we authenticate your request...',
-                  style: TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
               ),
+            );
+
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => UserDetailScreen(
+            //       role: widget.role,
+            //       image: widget.userData!['profileImage']??"",
+            //       gender: widget.userData!['gender'] ?? 'No Data',
+            //       primary: widget.userData!['primaryContact'] ??
+            //           'No Primary Contact',
+            //       emergencyContact1:
+            //           widget.userData!['emergencyContact1'] ??
+            //               'No EmergencyContact1',
+            //       emergencyContact2:
+            //           widget.userData!['emergencyContact2'] ??
+            //               'No EmergencyContact2',
+            //       name: widget.userData!['name'] ?? 'No Name',
+            //       bloodGroup:
+            //           widget.userData!['bloodGroup'] ?? 'No Blood Group',
+            //       dateOfBirth:
+            //           widget.userData!['dateOfBirth'] ?? 'No DOB',
+            //       allergicMedicationsData: allergicMedicationsData.toString()??"",
+            //       comorbiditiesData: comorbiditiesData.toString()??"",
+            //       currentMedicationsData: currentMedicationsData.toString()??"",
+            //       medicalHistoryData: medicalHistoryData.toString()??"",
+            //       surgicalHistoryData: surgicalHistoryData.toString()??"",
+            //     ),
+            //   ),
+            // );
+          },
+          child: Card(
+            elevation: 4.0,
+            child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListTile(
+                  title: Text(
+                    'Name: ${widget.userData['name']}',
+                    style: TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    'Blood Group: ${widget
+                        .userData['bloodGroup']}\nDate of Birth: ${widget
+                        .userData['dateOfBirth']}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                )),
+          ),
+        )
+            : Center(
+          child: Text(
+            'Please wait while we authenticate your request...',
+            style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }
 
-  Future<Map<String, dynamic>> _fetchUserDataCollection(
-      String collectionName, String userID) async {
+  Future<Map<String, dynamic>> _fetchUserDataCollection(String collectionName,
+      String userID) async {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection(collectionName)
@@ -464,7 +540,61 @@ class _QRCodeResultScreenState extends State<QRCodeResultScreen> {
       return {};
     }
   }
+
+  Future<Map<String, dynamic>> _fetchFamilyUserDataCollection(
+      String collectionName, String userID) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('familyUser')
+          .doc(userID)
+          .collection(collectionName)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        // Combine all documents into a single Map.
+        final Map<String, dynamic> combinedData = {};
+        for (var doc in snapshot.docs) {
+          combinedData[doc.id] = doc.data(); // Use document ID as the key.
+        }
+        return combinedData;
+      } else {
+        print('No documents found for the provided userID and collection.');
+        return {};
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      return {};
+    }
+  }
 }
+//   Future<Map<String, dynamic>> _fetchFamilyUserDataCollection(
+//       String collectionName, String userID) async {
+//     try {
+//       final snapshot = await FirebaseFirestore.instance
+//           .collection('familyUser')
+//           .doc(userID)
+//           .collection(collectionName)
+//           .get();
+//
+//       // if (snapshot.docs.isNotEmpty) {
+//       //   // Convert each document snapshot into a Map and return as a list.
+//       //   return snapshot.docs
+//       //       .map((doc) => doc.data() as Map<String, dynamic>)
+//       //       .toList();
+//       // }
+//       if (snapshot.exists) {
+//         return snapshot.data() as Map<String, dynamic>;
+//       }
+//       else {
+//         print('No documents found for the provided userID.');
+//         return {};
+//       }
+//     } catch (e) {
+//       print('Error fetching user data: $e');
+//       return {};
+//     }
+//   }
+// }
 
 // class QRCodeResultScreen extends StatelessWidget {
 //   final Map<String, dynamic> userData;

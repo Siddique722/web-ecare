@@ -851,7 +851,7 @@ class _HomeViewState extends State<HomeView> {
             Navigator.push(
                 context,
                 CupertinoDialogRoute(
-                    builder: (context) => const AmbulanceView(),
+                    builder: (context) =>  AmbulanceView(),
                     context: context));
           },
         ),

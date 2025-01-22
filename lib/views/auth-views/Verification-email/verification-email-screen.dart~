@@ -1,7 +1,6 @@
 import 'dart:async';
+import 'package:hpulse/constants/linker.dart';
 import 'package:flutter/cupertino.dart';
-
-import 'package:ecare/constants/linker.dart';
 
 class EmailVerificationLink extends StatefulWidget {
   const EmailVerificationLink({super.key});

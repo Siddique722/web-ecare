@@ -1,18 +1,17 @@
-// import 'package:demo_app/views/Home-Views/Nav-Bar/nav-bar-.dart';
-// import 'package:demo_app/views/auth-views/Reset-Password/generate-new-password.dart';
-// import 'package:demo_app/views/auth-views/signup-view.dart';
-// import 'package:demo_app/widgets/blue-button.dart';
-// import 'package:demo_app/widgets/custom-textfieldwidget.dart';
+// import 'package:hpulse/views/Home-Views/Nav-Bar/nav-bar-.dart';
+// import 'package:hpulse/views/auth-views/Reset-Password/generate-new-password.dart';
+// import 'package:hpulse/views/auth-views/signup-view.dart';
+// import 'package:hpulse/widgets/blue-button.dart';
+// import 'package:hpulse/widgets/custom-textfieldwidget.dart';
 // import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
-// import 'package:demo_app/constants/colors.dart';
+// import 'package:hpulse/constants/colors.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-// import 'package:demo_app/constants/linker.dart';
-import 'package:ecare/views/auth-views/login-view.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:hpulse/constants/linker.dart';
+ import 'package:flutter/cupertino.dart';
 
 import 'package:ecare/constants/linker.dart';
 

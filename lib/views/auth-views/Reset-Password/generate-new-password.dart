@@ -1,20 +1,20 @@
-// import 'package:demo_app/views/Home-Views/Nav-Bar/nav-bar-.dart';
-// import 'package:demo_app/widgets/blue-button.dart';
-// import 'package:demo_app/widgets/custom-textfieldwidget.dart';
+// import 'package:hpulse/views/Home-Views/Nav-Bar/nav-bar-.dart';
+// import 'package:hpulse/widgets/blue-button.dart';
+// import 'package:hpulse/widgets/custom-textfieldwidget.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
-// import 'package:demo_app/constants/colors.dart';
+// import 'package:hpulse/constants/colors.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-// import 'package:demo_app/constants/linker.dart';
+// import 'package:hpulse/constants/linker.dart';
 //
 // import 'package:flutter/material.dart';
-// import 'package:demo_app/constants/colors.dart';
-// import 'package:demo_app/widgets/blue-button.dart';
-// import 'package:demo_app/widgets/custom-textfieldwidget.dart';
+// import 'package:hpulse/constants/colors.dart';
+// import 'package:hpulse/widgets/blue-button.dart';
+// import 'package:hpulse/widgets/custom-textfieldwidget.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -68,14 +68,14 @@ class _NewPasswordState extends State<NewPassword> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('E',
+                    Text('H',
                         style: TextStyle(
                           fontFamily: "GilroyBold",
                           color: AppColors.blueColor,
                           fontSize: isMobile ? 30.sp : 40.sp,
                         )),
                     Text(
-                      ' Care',
+                      ' Pulse',
                       style: TextStyle(
                           fontFamily: "Gilroy",
                           color: AppColors.blueColor,

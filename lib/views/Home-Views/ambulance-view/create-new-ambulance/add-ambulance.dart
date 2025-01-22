@@ -1,5 +1,7 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+// import 'package:demo_app/constants/linker.dart'; // Make sure this imports correctly
 
 import 'package:ecare/constants/linker.dart';
 
@@ -50,11 +52,11 @@ class _AddAmbulanceViewState extends State<AddAmbulanceView> {
         'nameofambulanceservice': nameofambulanceservice.text,
         'id': id,
         'createdAt':
-        FieldValue.serverTimestamp(), // To store when it was created
+            FieldValue.serverTimestamp(), // To store when it was created
       };
-      await FirebaseFirestore.instance.collection('ambulances').doc(userId).set({
-        'id':userId,
-      });
+await FirebaseFirestore.instance.collection('ambulances').doc(userId).set({
+  'id':userId,
+});
       // Save data under 'ambulances' -> userId -> 'userambulance' subcollection
       await FirebaseFirestore.instance
           .collection('ambulances')

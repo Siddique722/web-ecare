@@ -116,14 +116,14 @@ class BoldTextWidgetTheme extends StatelessWidget {
 class BoldTextWidget extends StatelessWidget {
   final String text;
   final Color textColor;
-  final double textsize;
+  final double baseTextSize;
   final TextOverflow? overflow;
 
   const BoldTextWidget({
     Key? key,
     required this.text,
     required this.textColor,
-    required this.textsize,
+    required this.baseTextSize,
     this.overflow,
   }) : super(key: key);
 
@@ -134,7 +134,7 @@ class BoldTextWidget extends StatelessWidget {
       style: TextStyle(
         color: textColor,
         fontWeight: FontWeight.bold,
-        fontSize: textsize,
+        fontSize: baseTextSize,
       ),
       overflow: overflow ?? TextOverflow.ellipsis, // Default behavior
     );

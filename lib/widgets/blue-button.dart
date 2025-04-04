@@ -8,6 +8,7 @@ class BlueButton extends StatelessWidget {
   String text;
   double width;
   Color shadow;
+  double fontSize;
   BlueButton({super.key, required this.text, this.width = 320,  this.shadow=Colors.white});
 
   @override

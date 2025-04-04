@@ -9,7 +9,10 @@ class BlueButton extends StatelessWidget {
   double width;
   Color shadow;
   double fontSize;
-  BlueButton({super.key, required this.text, this.width = 320,  this.shadow=Colors.white});
+  BlueButton({super.key, required this.text, this.width = 320,  this.shadow=Colors.white,
+  this.fontSize=17,
+
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,7 @@ class BlueButton extends StatelessWidget {
           text,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 17,
+            fontSize: fontSize,
             color: AppColors.whiteColor,
           ),
         ),

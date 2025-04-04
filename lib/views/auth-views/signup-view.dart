@@ -612,9 +612,9 @@ class _SignupViewState extends State<SignupView> {
                           style: TextStyle(
                             fontFamily: "GilroyBold",
                             color: Colors.blue,
-                            fontSize: 24.sp,
+                            fontSize: isDesktop ? 28 : 24,
                           )),
-                      SizedBox(height: 10.h),
+                      SizedBox(height: isDesktop ? screenHeight * 0.02 : 5),
                       CustomTextFormField(
                         hintText: 'Username',
                         keyboardType: TextInputType.text,
@@ -626,21 +626,21 @@ class _SignupViewState extends State<SignupView> {
                         keyboardType: TextInputType.emailAddress,
                         controller: controller.emailController,
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: isDesktop ? screenHeight * 0.03 : 20),
                       CustomPasswordFormField(
                         hintText: 'Password',
                         keyboardType: TextInputType.text,
                         isPassword: true,
                         controller: controller.passwordController,
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: isDesktop ? screenHeight * 0.03 : 20),
                       CustomPasswordFormField(
                         hintText: 'Confirm Password',
                         keyboardType: TextInputType.text,
                         isPassword: true,
                         controller: controller.confirmPassword,
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: isDesktop ? screenHeight * 0.03 : 20),
                       Row(
                         children: [
                           Checkbox(

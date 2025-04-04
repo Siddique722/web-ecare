@@ -577,7 +577,7 @@ class _SignupViewState extends State<SignupView> {
                     style: TextStyle(
                       fontFamily: "GilroyBold",
                       color: AppColors.blueColor,
-                      fontSize: 24.sp,
+                      fontSize: isDesktop ? 40 : 30,
                     )),
                 Text(
                   ' Pulse',

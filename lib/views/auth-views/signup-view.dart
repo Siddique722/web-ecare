@@ -597,12 +597,12 @@ class _SignupViewState extends State<SignupView> {
               top: isDesktop ? screenHeight * 0.15 : 180,
             ),
             child: Container(
-              height: 700.h,
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? screenWidth * 0.05 : 20),
+              height: isDesktop ? screenHeight * 0.7 : 600,
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.6),
-                  borderRadius: BorderRadius.circular(20)),
+                  borderRadius: BorderRadius.circular(isDesktop ? 20 : 20)),
               child: Form(
                 key: controller.formKey,
                 child: SingleChildScrollView(

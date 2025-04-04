@@ -205,12 +205,15 @@ class _LoginViewState extends State<LoginView> {
                       else
                         InkWell(
                           onTap: _login,
-                          child: BlueButton(
-                            text: 'Login',
-                            fontSize: isDesktop ? 18 : 16,
+                          child: Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: isDesktop ? screenWidth * 0.1 : 20,
                               vertical: isDesktop ? 15 : 10,
+                            ),
+                            child: BlueButton(
+                              text: 'Login',
+                              fontSize: isDesktop ? 18 : 16,
+
                             ),
                           ),
                         ),

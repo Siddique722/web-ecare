@@ -509,7 +509,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               BoldTextWidget(
                 text: title,
                 textColor: Colors.white,
-                baseTextSize: isDesktop ? 36 : 27, // Larger on desktop
+                baseTextSize: isDesktop ? 30 : 27, // Larger on desktop
               ),
               SizedBox(height: isDesktop ? screenHeight * 0.02 : 10.0), // Responsive spacing
               SimpleTextWidget(

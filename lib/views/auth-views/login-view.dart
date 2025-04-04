@@ -110,7 +110,7 @@ class _LoginViewState extends State<LoginView> {
           ),
           // App Title - Centered and responsive
           Padding(
-            padding: EdgeInsets.symmetric(vertical: isDesktop ? screenHeight * 0.1 : 135),
+            padding: EdgeInsets.symmetric(vertical: isDesktop ? screenHeight * 0.07 : 135),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -553,6 +553,12 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions for responsive calculations
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Define threshold for desktop (e.g., screens wider than 800px)
+    final isDesktop = screenWidth > 800;
     return Scaffold(
       body: Stack(
         children: [
@@ -563,7 +569,7 @@ class _SignupViewState extends State<SignupView> {
             fit: BoxFit.cover,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 50.h),
+            padding: EdgeInsets.symmetric(vertical: isDesktop ? screenHeight * 0.07 : 135),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

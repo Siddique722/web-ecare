@@ -658,6 +658,7 @@ class _SignupViewState extends State<SignupView> {
                               style: TextStyle(
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,
+                                fontSize: isDesktop ? 16 : 14,
                               ),
                             ),
                           ),
@@ -677,22 +678,31 @@ class _SignupViewState extends State<SignupView> {
                                         'Please accept terms and conditions to proceed.',
                                       );
                                     },
-                              child: BlueButton(text: 'Signup'),
+                              child:
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isDesktop ? screenWidth * 0.1 : 20,
+                                  vertical: isDesktop ? 15 : 10,
+                                ),
+                                child: BlueButton(text: 'Signup',
+                                  fontSize: isDesktop ? 18 : 16,
+                                ),
+                              ),
                             )),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: isDesktop ? screenHeight * 0.02 : 10),
                       //   if (!kIsWeb && Platform.isAndroid)
                       _isLoadingg
                           ? AppLoading()
                           : OutlinedButton.icon(
                               icon: Image.asset(
                                 "assets/ic_google.png",
-                                scale: 4,
+                                scale: isDesktop ? 3 : 44,
                               ),
                               // icon: Icon(Icons.g_translate,
                               //     color: Colors.black),
                               label: Text(
                                 'Continue with Google',
-                                style: TextStyle(color: Colors.black),
+                                style: TextStyle(color: Colors.black,fontSize: isDesktop ? 18 : 16),
                               ),
                               onPressed: isTermsAccepted
                                   ? _signInWithGoogle

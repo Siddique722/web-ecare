@@ -485,18 +485,59 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  // Widget _buildPage(BuildContext context,
+  //     {required String title,
+  //     required String description,
+  //     required String imagePath})
+  // {
+  //   double width = MediaQuery.of(context).size.width;
+  //   double height = MediaQuery.of(context).size.height;
+  //
+  //   return Stack(
+  //     children: [
+  //       Container(
+  //         height: height, // Use screen height for responsiveness
+  //         width: width, // Use screen width for responsiveness
+  //         child: Image.asset(
+  //           fit: BoxFit.cover,
+  //           imagePath,
+  //           height: height,
+  //         ),
+  //       ),
+  //       Container(
+  //         padding: EdgeInsets.only(
+  //             left: width * 0.05, right: width * 0.05, bottom: 90),
+  //         child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.end,
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             SizedBox(height: 30.0),
+  //             BoldTextWidget(
+  //               textsize: 27.0,
+  //               text: title,
+  //               textColor: Colors.white,
+  //             ),
+  //             SizedBox(height: 10.0),
+  //             SimpleTextWidget(
+  //                 textsize: 16.0, text: description, textColor: Colors.white)
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
   Widget _buildPage(BuildContext context,
       {required String title,
-      required String description,
-      required String imagePath}) {
+        required String description,
+        required String imagePath}) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
     return Stack(
       children: [
         Container(
-          height: height, // Use screen height for responsiveness
-          width: width, // Use screen width for responsiveness
+          height: height,
+          width: width,
           child: Image.asset(
             fit: BoxFit.cover,
             imagePath,
@@ -512,13 +553,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               SizedBox(height: 30.0),
               BoldTextWidget(
-                textsize: 27.0,
                 text: title,
                 textColor: Colors.white,
+                baseTextSize: 27, // Base size for mobile
               ),
               SizedBox(height: 10.0),
               SimpleTextWidget(
-                  textsize: 16.0, text: description, textColor: Colors.white)
+                text: description,
+                textColor: Colors.white,
+                baseTextSize: 16, // Base size for mobile
+              ),
             ],
           ),
         ),

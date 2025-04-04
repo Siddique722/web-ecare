@@ -584,7 +584,7 @@ class _SignupViewState extends State<SignupView> {
                   style: TextStyle(
                       fontFamily: "Gilroy",
                       color: AppColors.blueColor,
-                      fontSize: 24.sp,
+                      fontSize: isDesktop ? 40 : 30,
                       fontWeight: FontWeight.w900),
                 ),
               ],
@@ -592,9 +592,9 @@ class _SignupViewState extends State<SignupView> {
           ),
           Padding(
             padding: EdgeInsets.only(
-              left: 30.w,
-              right: 30.w,
-              top: 90.h,
+              left: isDesktop ? screenWidth * 0.1 : 30,
+              right: isDesktop ? screenWidth * 0.1 : 30,
+              top: isDesktop ? screenHeight * 0.15 : 180,
             ),
             child: Container(
               height: 700.h,

@@ -378,12 +378,14 @@ class _CArtScreenState extends State<CArtScreen> {
       },
     );
   }
-  Future<String?> createOrder(int amount, String currency, String receipt) async
-  {
+  Future<String?> createOrder(int amount, String currency, String receipt) async {
+    print("Creating Razorpay order with amount: $amount, currency: $currency, receipt: $receipt");
+
     const String keyId = 'rzp_live_amIyo5XZmakZUK';
-    const String keySecret =
-        'LcsKwsb7c3CgCOXyiEDx17BZ'; // Replace with your Razorpay secret key
+    const String keySecret = 'LcsKwsb7c3CgCOXyiEDx17BZ';
     final String auth = base64Encode(utf8.encode('$keyId:$keySecret'));
+
+    print("Auth header generated: Basic $auth");
 
     final url = Uri.parse('https://api.razorpay.com/v1/orders');
     final headers = {
@@ -392,24 +394,30 @@ class _CArtScreenState extends State<CArtScreen> {
     };
 
     final body = jsonEncode({
-      'amount': (amount * 100).toInt(), // Convert amount to paisa
+      'amount': (amount * 100).toInt(),
       'currency': currency,
       'receipt': receipt,
-      'payment_capture': 1, // Set this to 1 to enable auto-capture
+      'payment_capture': 1,
     });
 
+    print("Request body: $body");
+
     try {
+      print("Sending POST request to Razorpay API...");
       final response = await http.post(url, headers: headers, body: body);
+      print("Response status code: ${response.statusCode}");
+      print("Response body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonResponse = json.decode(response.body);
-        return jsonResponse['id']; // Return the order ID
+        print("Order created successfully. Order ID: ${jsonResponse['id']}");
+        return jsonResponse['id'];
       } else {
         print('Error creating order: ${response.body}');
         return null;
       }
     } catch (e) {
-      print('Exception: $e');
+      print('Exception during order creation: $e');
       return null;
     }
   }

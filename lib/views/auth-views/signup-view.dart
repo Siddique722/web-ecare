@@ -721,7 +721,9 @@ class _SignupViewState extends State<SignupView> {
                                 icon: Icon(Icons.apple, color: Colors.black),
                                 label: Text(
                                   'Continue with Apple',
-                                  style: TextStyle(color: Colors.black),
+                                  style: TextStyle(color: Colors.black,
+                                      fontSize: isDesktop ? 18 : 16
+                                  ),
                                 ),
                                 onPressed: isTermsAccepted
                                     ? _signInWithApple

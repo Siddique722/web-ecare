@@ -449,6 +449,7 @@ class _CArtScreenState extends State<CArtScreen> {
       );
     }
   }
+
   void _startPayment() async {
     print("Starting payment process...");
 
@@ -462,32 +463,32 @@ class _CArtScreenState extends State<CArtScreen> {
     print("Order created successfully. Order ID: $orderId");
 
     var options = {
-      'key': 'rzp_live_amIyo5XZmakZUK', // Ensure this is correct and live key
-      'amount': widget.totalPrice * 100, // Amount in paisa
+      'key': 'rzp_live_amIyo5XZmakZUK',
+      'amount': widget.totalPrice * 100,
       'currency': 'INR',
-      'order_id': orderId, // Pass the generated order ID
+      'order_id': orderId,
       'name': 'H Pulse',
       'description': 'Order Payment',
       'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'},
-      'external': {
-        'wallets': ['paytm'] // Optional: Specify wallets if needed
-      },
     };
 
     print("Payment options prepared: $options");
 
     try {
-      print("Attempting to open Razorpay checkout...");
-      _razorpay.open(options);
-      print("Razorpay checkout opened successfully.");
+      if (kIsWeb) { // Use `kIsWeb` from `import 'package:flutter/foundation.dart';`
+        print("Running on web, using JavaScript interop...");
+        startRazorpayPaymentOnWeb(options);
+      } else {
+        print("Running on mobile, using Razorpay Flutter plugin...");
+        _razorpay.open(options);
+      }
     } catch (e) {
-      print("Error starting payment on web: $e");
+      print("Error starting payment: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Payment initiation failed: $e")),
       );
     }
-  }
-//   void _startPayment(String orderId, int amount) {
+  }//   void _startPayment(String orderId, int amount) {
 //     print("==============1");
 //     var options = {
 //       // Replace the test key with your live key

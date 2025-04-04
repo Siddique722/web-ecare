@@ -668,7 +668,7 @@ class _HomeViewState extends State<HomeView> {
                               child: BoldTextWidget(
                                 text: 'Welcome: $_userName',
                                 textColor: Colors.white,
-                                textsize: 18,
+                                baseTextSize: 18,
                                 overflow: TextOverflow
                                     .visible, // Ensure the text can wrap
                               ),

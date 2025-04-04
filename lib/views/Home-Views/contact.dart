@@ -51,7 +51,7 @@ class _ContactState extends State<Contact> {
                   //  Icon(Icons.insert_chart_outlined),
                   SizedBox(
                       width: 8.w), // Adding spacing between the icon and text
-                  SimpleTextWidgetTheme(text: 'Dr. Thomas_Joseph',textsize: 14,),
+                  SimpleTextWidgetTheme(text: 'Dr. Thomas_Joseph',baseTextSize: 14,),
                 ],
               ),
             ),

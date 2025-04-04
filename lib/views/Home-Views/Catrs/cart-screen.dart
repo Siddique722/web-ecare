@@ -412,65 +412,79 @@ class _CArtScreenState extends State<CArtScreen> {
       return null;
     }
   }
-  // Future<void> createOrderWithDio() async {
-  //   const String url = "https://hpulse-api.onrender.com/create-order";
-  //
-  //   // Order creation request body
-  //   Map<String, dynamic> body = {
-  //     "amount": widget.totalPrice, // Amount in paise (100 INR = 10000 paise)
-  //     "currency": "INR",
-  //     "receipt": "order_ihjureceipt_123",
-  //     "payment_capture": "1",
-  //   };
-  //
-  //   try {
-  //     Dio dio = Dio();
-  //
-  //     // Sending POST request to the server
-  //     Response response = await dio.post(
-  //       url,
-  //       data: body,
-  //       options: Options(
-  //         headers: {"Content-Type": "application/json"},
-  //       ),
-  //     );
-  //
-  //     if (response.data['success']) {
-  //       String orderId = response.data['order_id'];
-  //      // _startPayment(orderId, int.parse(widget.totalPrice.toString()));
-  //     } else {
-  //       throw Exception(
-  //           "Failed to create order: ${response.data['message'] ?? 'Unknown error'}");
-  //     }
-  //   } catch (e) {
-  //     print("Error creating order: ${e}");
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Order creation failed: $e")),
-  //     );
-  //   }
-  // }
+  Future<void> createOrderWithDio() async {
+    const String url = "https://hpulse-api.onrender.com/create-order";
+
+    // Order creation request body
+    Map<String, dynamic> body = {
+      "amount": widget.totalPrice, // Amount in paise (100 INR = 10000 paise)
+      "currency": "INR",
+      "receipt": "order_ihjureceipt_123",
+      "payment_capture": "1",
+    };
+
+    try {
+      Dio dio = Dio();
+
+      // Sending POST request to the server
+      Response response = await dio.post(
+        url,
+        data: body,
+        options: Options(
+          headers: {"Content-Type": "application/json"},
+        ),
+      );
+
+      if (response.data['success']) {
+        String orderId = response.data['order_id'];
+       // _startPayment(orderId, int.parse(widget.totalPrice.toString()));
+      } else {
+        throw Exception(
+            "Failed to create order: ${response.data['message'] ?? 'Unknown error'}");
+      }
+    } catch (e) {
+      print("Error creating order: ${e}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Order creation failed: $e")),
+      );
+    }
+  }
   void _startPayment() async {
+    print("Starting payment process...");
+
     final orderId = await createOrder(widget.totalPrice, 'INR', 'receipt123');
 
     if (orderId == null) {
-      print('Failed to create order.');
+      print('Failed to create order. Order ID is null.');
       return;
     }
 
+    print("Order created successfully. Order ID: $orderId");
+
     var options = {
-      'key': 'rzp_live_amIyo5XZmakZUK',
+      'key': 'rzp_live_amIyo5XZmakZUK', // Ensure this is correct and live key
       'amount': widget.totalPrice * 100, // Amount in paisa
       'currency': 'INR',
       'order_id': orderId, // Pass the generated order ID
       'name': 'H Pulse',
       'description': 'Order Payment',
       'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'},
+      'external': {
+        'wallets': ['paytm'] // Optional: Specify wallets if needed
+      },
     };
 
+    print("Payment options prepared: $options");
+
     try {
+      print("Attempting to open Razorpay checkout...");
       _razorpay.open(options);
+      print("Razorpay checkout opened successfully.");
     } catch (e) {
-      print("Error starting payment: $e");
+      print("Error starting payment on web: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Payment initiation failed: $e")),
+      );
     }
   }
 //   void _startPayment(String orderId, int amount) {
@@ -499,8 +513,11 @@ class _CArtScreenState extends State<CArtScreen> {
 //   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    print(
-        "---------------------------------------------------------------Payment Success: ${response.paymentId}");
+    print("Payment Success Handler Called");
+    print("Payment ID: ${response.paymentId}");
+    print("Order ID: ${response.orderId}");
+    print("Signature: ${response.signature}");
+
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final cartCollection = FirebaseFirestore.instance.collection('CartData');
@@ -508,15 +525,11 @@ class _CArtScreenState extends State<CArtScreen> {
           .collection('usersCartData')
           .doc(userId)
           .collection('Cart');
-      final String currentDate =
-          DateFormat('yyyy-MM-dd').format(DateTime.now());
-      print(
-          '----------------------DATA ADDING in Firestore collection .........');
-      print('87698-4=45=6=-=-=-=-=-=2-4=32434499-24=-4=32-4=3-4=324859485945');
-      print(firestoreCartItems);
+      final String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+      print('Starting to save payment data to Firestore...');
       for (var item in firestoreCartItems) {
-        print('Contact1:${item['contact1']}');
-        print('Contact2:${item['contact2']}');
+        print('Saving item: ${item['name']} with price: ${item['price']}');
         await cartCollection.add({
           'imageUrl': item['imageUrl'],
           'name': item['name'] ?? '',
@@ -535,25 +548,34 @@ class _CArtScreenState extends State<CArtScreen> {
           'timestamp': FieldValue.serverTimestamp(),
         });
       }
+
       final userCartDocs = await userCartCollection.get();
       for (var doc in userCartDocs.docs) {
+        print('Deleting cart item from user cart: ${doc.id}');
         await doc.reference.delete();
       }
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.clear();
       setState(() {
         firestoreCartItems.clear();
         widget.totalPrice = 0;
       });
+
+      print("Payment processed and cart cleared successfully.");
       _showSuccessDialog();
     } catch (e) {
-      print('Error processing payment and updating Firestore: $e');
+      print('Error in payment success handling: $e');
     }
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    print(
-        "---------------------------------------------Payment Error: ${response.message}");
+    print("Payment Error Handler Called");
+    print("Error Code: ${response.code}");
+    print("Error Description: ${response.message}");
+    print("Error Error: ${response.error}");
+    print("Error Data: ${response.code}");
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -575,13 +597,16 @@ class _CArtScreenState extends State<CArtScreen> {
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
+    print("External Wallet Handler Called");
+    print("Wallet Name: ${response.walletName}");
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("_handleExternalWallet"),
+          title: Text("External Wallet Selected"),
           content: Text(
-              "Something went wrong. Please try again. Error: ${response.walletName}"),
+              "Payment redirected to external wallet: ${response.walletName}"),
           actions: [
             TextButton(
               child: Text("OK"),
@@ -593,9 +618,6 @@ class _CArtScreenState extends State<CArtScreen> {
         );
       },
     );
-
-    print(
-        "------------------------------------External Wallet: ${response.walletName}");
   }
 
   void _showSuccessDialog() {
